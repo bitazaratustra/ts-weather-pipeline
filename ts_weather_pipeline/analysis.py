@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.stattools import adfuller
 from scipy.fft import rfft, rfftfreq
@@ -25,4 +26,11 @@ def plot_fft(series, fs=1.0):
     plt.xlabel("Freq (1/hour)")
     plt.ylabel("Amplitude")
     plt.title("FFT")
+    plt.show()
+
+def plot_pollutant_correlation(df, pollutants=["pm2_5", "pm10", "no2"]):
+    corr_matrix = df[pollutants].corr()
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(corr_matrix, annot=True, cmap="coolwarm")
+    plt.title("Correlación entre contaminantes")
     plt.show()
