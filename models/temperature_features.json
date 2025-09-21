@@ -1,0 +1,1 @@
+{"features": ["temperature_2m", "relativehumidity_2m", "windspeed_10m", "precipitation", "hour", "dow", "month", "hour_sin", "hour_cos", "month_sin", "month_cos", "temperature_2m_lag_1", "temperature_2m_lag_24", "temperature_2m_lag_168", "f24_sin_1", "f24_cos_1", "f24_sin_2", "f24_cos_2", "f24_sin_3", "f24_cos_3"], "target": "temperature_2m"}
