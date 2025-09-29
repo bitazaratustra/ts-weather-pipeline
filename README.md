@@ -1,82 +1,74 @@
 ````markdown
-# TS Weather Pipeline
+# 🌦️ TS Weather Pipeline  
 
 **Pipeline reproducible para series temporales de meteorología y calidad del aire.**  
-Proyecto desarrollado como trabajo para la materia *Series Temporales* — Maestría en Data Mining (Facultad de Ciencias Exactas y Naturales, UBA, 2025).
+Proyecto desarrollado como trabajo para la materia *Series Temporales* — Maestría en Data Mining (UBA, 2025).  
 
 ---
 
-## Resumen ejecutivo
-Repositorio que implementa un flujo completo —ingestión, procesamiento, ingeniería de características, modelado y evaluación— para pronóstico de variables meteorológicas (p. ej. temperatura) y de calidad del aire (p. ej. PM₂.₅) usando datos históricos de Open-Meteo. El proyecto combina enfoques estadísticos clásicos (líneas base, ARIMA/VAR) y modelos de aprendizaje profundo (LSTM, Transformer) en notebooks reproducibles y scripts orquestadores.
+## 📌 Resumen ejecutivo  
+Repositorio que implementa un flujo completo —ingestión, procesamiento, ingeniería de características, modelado y evaluación— para pronóstico de variables meteorológicas (🌡️ temperatura) y de calidad del aire (💨 contaminantes) usando datos históricos.  
+
+Se incluyen enfoques estadísticos clásicos (líneas base, ARIMA/VAR) y modelos de aprendizaje profundo (LSTM, Transformer), junto con notebooks reproducibles y scripts orquestadores.  
 
 ---
 
-## Objetivos
-1. Construir un pipeline modular y trazable para pronóstico univariado y multivariado de series temporales meteorológicas.  
-2. Comparar desempeño entre bases estadísticas y arquitecturas recurrentes / transformacionales.  
-3. Garantizar reproducibilidad mediante entornos, checkpoints y cache de datos.
+## 🎯 Objetivos  
+1. Construir un pipeline modular y trazable para pronóstico univariado y multivariado de series temporales.  
+2. Comparar desempeño entre modelos estadísticos y arquitecturas de deep learning.  
+3. Garantizar reproducibilidad mediante entornos, checkpoints y cache de datos.  
 
 ---
 
-## Contenido del repositorio
-- `config/` — parámetros y configuración del pipeline.  
-- `data/` — datos crudos y procesados.  
-- `models/` — modelos entrenados y checkpoints.  
-- `notebooks/` — notebooks con EDA, experimentos y visualizaciones.  
-- `ts_weather_pipeline/` — paquete con módulos del pipeline.  
-- `.openmeteo_cache.sqlite` — cache local de llamadas a Open-Meteo.  
-- `Makefile` — tareas automatizables (ejecución, limpieza, etc.).  
-- `main.py` — orquestador / punto de entrada del pipeline.  
-- `requirements.txt` — dependencias Python reproducibles.  
-- `setup.py` — metadatos del paquete.  
-- `README.md` — este documento.
+## 📂 Contenido del repositorio  
+- `config/` — parámetros y configuración del pipeline  
+- `data/` — datos crudos y procesados  
+- `models/` — modelos entrenados y checkpoints  
+- `notebooks/` — notebooks con EDA, experimentos y visualizaciones  
+- `ts_weather_pipeline/` — paquete con módulos del pipeline  
+- `.openmeteo_cache.sqlite` — cache local de llamadas a Open-Meteo  
+- `Makefile` — tareas automatizables (ejecución, limpieza, etc.)  
+- `main.py` — orquestador / punto de entrada del pipeline  
+- `requirements.txt` — dependencias Python reproducibles  
+- `setup.py` — metadatos del paquete  
+- `README.md` — este documento  
 
 ---
 
-## Requisitos de entorno
+## ⚙️ Requisitos de entorno  
 - Python 3.8+  
-- Recomendado: entorno virtual (venv / conda)  
-- Dependencias listadas en `requirements.txt`
+- Entorno virtual recomendado (venv / conda)  
+- Dependencias listadas en `requirements.txt`  
 
 ---
 
-## Instalación (procedimiento reproducible)
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/bitazaratustra/ts-weather-pipeline.git
-   cd ts-weather-pipeline
+## 🚀 Instalación  
+```bash
+git clone https://github.com/bitazaratustra/ts-weather-pipeline.git
+cd ts-weather-pipeline
+
+python -m venv venv
+source venv/bin/activate      # Linux / macOS
+# venv\Scripts\Activate.ps1   # Windows PowerShell
+
+pip install -r requirements.txt
 ````
 
-2. Crear y activar un entorno virtual:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate      # Linux / macOS
-   # venv\Scripts\Activate.ps1   # Windows PowerShell
-   ```
-3. Instalar dependencias:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 ---
 
-## Ejecución rápida
+## ▶️ Ejecución rápida
 
-* Pipeline completo (orquestador):
+* Pipeline completo:
 
   ```bash
   python main.py
   ```
-* Abrir y ejecutar notebooks:
+* Abrir notebooks:
 
   ```bash
   jupyter lab
-  # o
-  jupyter notebook
   ```
-* Makefile (tareas disponibles según el repositorio):
+* Makefile (tareas disponibles):
 
   ```bash
   make help
@@ -85,47 +77,49 @@ Repositorio que implementa un flujo completo —ingestión, procesamiento, ingen
 
 ---
 
-## Flujo del pipeline (alto nivel)
+## 🔄 Flujo del pipeline
 
-1. **Ingestión de datos**: descarga de series históricas desde Open-Meteo y almacenamiento en `data/` con cache en `.openmeteo_cache.sqlite`.
-2. **Preprocesamiento**: limpieza temporal, imputación de faltantes y alineamiento de frecuencias.
-3. **Ingeniería de características**: creación de lags, ventanas deslizantes, variables calendario y exógenas.
-4. **Modelado**: comparación entre líneas base (naïve), modelos ARIMA/VAR y modelos secuenciales (LSTM) o basados en atención (Transformer).
-5. **Evaluación**: métricas de error (MAE, RMSE, R²) y visualización de predicciones vs. observaciones.
-6. **Persistencia**: exportación de checkpoints y pronósticos a `models/` y `data/results/`.
-
----
-
-## Metodología y diseño experimental
-
-* Se emplea *time-aware splitting* (train / validation / test) respetando el orden temporal.
-* Para cada experimento se versionan: parámetros, seed, lista de features y fecha/hora de ejecución.
-* Resultados cuantitativos (MAE / RMSE) y cualitativos (plots temporales) se registran en los notebooks de `notebooks/`.
+1. Ingestión de datos históricos.
+2. Preprocesamiento y limpieza.
+3. Ingeniería de características (lags, ventanas, variables exógenas).
+4. Modelado (ARIMA, VAR, LSTM, Transformer).
+5. Evaluación con métricas (MAE, RMSE, R²).
+6. Exportación de resultados y modelos.
 
 ---
 
-## Datos
+## 📊 Resultados esperados
 
-* Fuente primaria: **Open-Meteo** (descarga programática).
-* Cache: `.openmeteo_cache.sqlite` para evitar múltiples llamadas y asegurar reproducibilidad de la data adquirida.
-
----
-
-## Salidas esperadas
-
-* Modelos entrenados y sus pesos en `models/`.
-* Pronósticos exportados en CSV en `data/` o `results/`.
-* Notebooks ejecutables con gráficos de comparación y tablas de métricas.
+* Modelos entrenados y almacenados en `/models`.
+* Pronósticos exportados en CSV y gráficas comparativas.
+* Notebooks con análisis exploratorio y reportes.
+* Métricas cuantitativas y visualizaciones de desempeño.
 
 ---
 
-## Reproducibilidad científica
+## 🗂️ Fuentes de datos
 
-* Control de dependencias vía `requirements.txt`.
-* Script orquestador único: `main.py` para reproducir el flujo completo.
-* Notebooks documentados para replicar análisis y gráficos.
+* **🌐 Open-Meteo** — series históricas meteorológicas vía API.
+* **🏙️ BA Data** — calidad del aire en tiempo real, estaciones de la Ciudad Autónoma de Buenos Aires.
+* **🌡️ SMN (Servicio Meteorológico Nacional)** — datos de temperatura medidos en estaciones oficiales de Capital Federal.
+
+Estas fuentes aseguran representatividad y validez de los datos al provenir directamente de estaciones de medición locales.
 
 ---
 
-Fuentes: repositorio y archivos del proyecto en GitHub. :contentReference[oaicite:0]{index=0}
+## 📜 Reproducibilidad científica
+
+* Dependencias controladas vía `requirements.txt`.
+* Ejecución orquestada mediante `main.py`.
+* Datos cacheados en `.openmeteo_cache.sqlite`.
+* Notebooks documentados para replicar resultados.
+
+---
+
+## 📖 Licencia y citación
+
+* Agregar archivo `LICENSE` con la licencia deseada (p. ej. MIT).
+* Para citar este repositorio en trabajos académicos, se recomienda la referencia directa al código fuente en GitHub.
+
+```
 ```
