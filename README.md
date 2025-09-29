@@ -2,9 +2,6 @@
 # TS Weather Pipeline
 
 Pipeline end-to-end para series temporales de clima y calidad del aire (pronóstico de temperatura y contaminación) — proyecto de pruebas/experimentos para la materia *Series Temporales* (Maestría Data Mining, UBA).
-
-> Este README está pensado para pegar directamente en `README.md`. Contiene instrucciones rápidas para instalar, ejecutar y entender la estructura del repo.
-
 ---
 
 ## ¿Qué hace este repositorio?
