@@ -51,8 +51,6 @@ pip install -r requirements.txt
 └── README.md
 ```
 
-> Nota: adaptá la ruta/archivo de configuración dentro de `config/` según tu entorno (p.ej. cambiar ciudad, rango de fechas, horizonte de predicción).
-
 ---
 
 ## Configuración rápida
