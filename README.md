@@ -1,24 +1,19 @@
-````markdown
 # 🌦️ TS Weather Pipeline  
-
 **Pipeline reproducible para series temporales de meteorología y calidad del aire.**  
-Proyecto desarrollado como trabajo para la materia *Series Temporales* — Maestría en Data Mining (UBA, 2025).  
-
----
+Proyecto desarrollado como trabajo para la materia *Series Temporales* — Maestría en Data Mining (UBA, 2025).
 
 ## 📌 Resumen ejecutivo  
+
 Repositorio que implementa un flujo completo —ingestión, procesamiento, ingeniería de características, modelado y evaluación— para pronóstico de variables meteorológicas (🌡️ temperatura) y de calidad del aire (💨 contaminantes) usando datos históricos.  
 
 Se incluyen enfoques estadísticos clásicos (líneas base, ARIMA/VAR) y modelos de aprendizaje profundo (LSTM, Transformer), junto con notebooks reproducibles y scripts orquestadores.  
 
----
 
 ## 🎯 Objetivos  
 1. Construir un pipeline modular y trazable para pronóstico univariado y multivariado de series temporales.  
 2. Comparar desempeño entre modelos estadísticos y arquitecturas de deep learning.  
 3. Garantizar reproducibilidad mediante entornos, checkpoints y cache de datos.  
 
----
 
 ## 📂 Contenido del repositorio  
 - `config/` — parámetros y configuración del pipeline  
