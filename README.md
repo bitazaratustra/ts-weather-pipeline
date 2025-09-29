@@ -70,73 +70,18 @@ Copiar código
    ```bash
    git clone https://github.com/bitazaratustra/ts-weather-pipeline.git
    cd ts-weather-pipeline
-(Opcional) Crear y activar un entorno virtual:
+   ```
 
-bash
-Copiar código
+```bash
+# Copiar código
 python3 -m venv venv
 source venv/bin/activate     # en Linux / macOS
 # o en Windows: venv\Scripts\activate
+```
 Instalá las dependencias:
 
-bash
+```bash
 Copiar código
 pip install -r requirements.txt
-Configuración inicial:
+```
 
-Revisá (y editá si es necesario) los archivos en config/ para ajustar rutas, parámetros de modelo, horizontes de pronóstico, etc.
-
-Si usás APIs que requieren clave (token), asegurate de configurar variables de entorno o archivo config.
-
-Ejecutá el pipeline:
-
-bash
-Copiar código
-python main.py
-Dependiendo de tu configuración, esto ejecutará todo el flujo (descarga, preprocesamiento, modelado y evaluación).
-
-Uso / ejemplos
-En notebooks/ hay ejemplos de exploración de datos, visualización y experimentos iniciales.
-
-Podés ajustar los modelos en ts_weather_pipeline/modelling.py para probar distintos algoritmos, arquitecturas, cantidades de capas, etc.
-
-En evaluation.py se implementan métricas de error (MAE, RMSE, etc.) y comparación entre modelos.
-
-Resultados esperados
-Tras ejecutar el pipeline, podés esperar:
-
-Modelos entrenados que pronostican temperatura y contaminación para horizontes dados.
-
-Gráficos comparativos entre valores reales y pronosticados.
-
-Tablas de métricas de desempeño (errores, sesgos).
-
-Posible exportación de pronósticos a archivos CSV, gráficas, etc.
-
-Buenas prácticas y recomendaciones
-Usar split temporal (train / validation / test) adecuada para series.
-
-Normalización / escalado consistente entre entrenamiento y prueba.
-
-Evitar data leakage al construir features con ventanas y lags.
-
-Hacer validación cruzada temporal si es aplicable.
-
-Documentar cada experimento (qué parámetros, qué datos se usaron).
-
-Versionar modelos entrenados para su comparación futura.
-
-Extensiones posibles
-Incorporar otras fuentes de datos (sensores locales, estaciones de monitoreo de calidad del aire).
-
-Hacer pronóstico multivariado: usar más variables (viento, humedad, etc.) o exógenas externas (tráfico, emisiones industriales).
-
-Implementar modelos más complejos (transformers en series temporales, modelos híbridos).
-
-Despliegue en producción: API, dashboard, pipeline automatizado (Airflow, prefijos temporales, cron).
-
-Monitoreo del desempeño del modelo en producción.
-
-Licencia & contacto
-Este proyecto fue realizado como entrega para la materia de Series Temporales (UBA). No tiene actualmente licencia específica (podés agregar una, p.ej. MIT).
-Si querés comentarme algo, podés contactarte conmigo en este repositorio o vía GitHub.
