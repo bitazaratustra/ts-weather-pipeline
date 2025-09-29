@@ -1,173 +1,131 @@
 ````markdown
 # TS Weather Pipeline
 
-Pipeline end-to-end para series temporales de clima y calidad del aire (pronóstico de temperatura y contaminación) — proyecto de pruebas/experimentos para la materia *Series Temporales* (Maestría Data Mining, UBA).
----
-
-## ¿Qué hace este repositorio?
-
-- Descarga datos meteorológicos históricos (uso de Open-Meteo / cache local).  
-- Limpieza y preprocesamiento de series temporales (lags, ventanas, imputación).  
-- Generación de *features* y pipelines reproducibles.  
-- Modelos baseline estadísticos (naïve, ARIMA/VAR) y modelos de deep learning (LSTM / Transformer) para pronosticar temperatura y contaminantes.  
-- Evaluación de forecasts (MAE, RMSE, visualizaciones) y guardado de checkpoints/resultados.  
-- Notebooks con experimentos y ejemplos reproducibles.
+**Pipeline reproducible para series temporales de meteorología y calidad del aire.**  
+Proyecto desarrollado como trabajo para la materia *Series Temporales* — Maestría en Data Mining (Facultad de Ciencias Exactas y Naturales, UBA, 2025).
 
 ---
 
-## Requisitos
+## Resumen ejecutivo
+Repositorio que implementa un flujo completo —ingestión, procesamiento, ingeniería de características, modelado y evaluación— para pronóstico de variables meteorológicas (p. ej. temperatura) y de calidad del aire (p. ej. PM₂.₅) usando datos históricos de Open-Meteo. El proyecto combina enfoques estadísticos clásicos (líneas base, ARIMA/VAR) y modelos de aprendizaje profundo (LSTM, Transformer) en notebooks reproducibles y scripts orquestadores.
 
-- Python 3.8+ (recomendado 3.9/3.10)  
-- Git  
-- Recursos opcionales: GPU para entrenar modelos deep learning más rápido
+---
 
-Las dependencias principales están en `requirements.txt`. Instálalas en un entorno virtual:
+## Objetivos
+1. Construir un pipeline modular y trazable para pronóstico univariado y multivariado de series temporales meteorológicas.  
+2. Comparar desempeño entre bases estadísticas y arquitecturas recurrentes / transformacionales.  
+3. Garantizar reproducibilidad mediante entornos, checkpoints y cache de datos.
 
-```bash
-python -m venv venv
-# Linux / macOS
-source venv/bin/activate
-# Windows (PowerShell)
-venv\Scripts\Activate.ps1
+---
 
-pip install -r requirements.txt
+## Contenido del repositorio
+- `config/` — parámetros y configuración del pipeline.  
+- `data/` — datos crudos y procesados.  
+- `models/` — modelos entrenados y checkpoints.  
+- `notebooks/` — notebooks con EDA, experimentos y visualizaciones.  
+- `ts_weather_pipeline/` — paquete con módulos del pipeline.  
+- `.openmeteo_cache.sqlite` — cache local de llamadas a Open-Meteo.  
+- `Makefile` — tareas automatizables (ejecución, limpieza, etc.).  
+- `main.py` — orquestador / punto de entrada del pipeline.  
+- `requirements.txt` — dependencias Python reproducibles.  
+- `setup.py` — metadatos del paquete.  
+- `README.md` — este documento.
+
+---
+
+## Requisitos de entorno
+- Python 3.8+  
+- Recomendado: entorno virtual (venv / conda)  
+- Dependencias listadas en `requirements.txt`
+
+---
+
+## Instalación (procedimiento reproducible)
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/bitazaratustra/ts-weather-pipeline.git
+   cd ts-weather-pipeline
 ````
 
----
+2. Crear y activar un entorno virtual:
 
-## Estructura del repositorio (extracto)
+   ```bash
+   python -m venv venv
+   source venv/bin/activate      # Linux / macOS
+   # venv\Scripts\Activate.ps1   # Windows PowerShell
+   ```
+3. Instalar dependencias:
 
-```
-.
-├── config/                  # archivos de configuración / parámetros del pipeline
-├── data/                    # datos crudos y procesados
-├── models/                  # modelos entrenados / checkpoints / pesos
-├── notebooks/               # notebooks de exploración y experimentos
-├── ts_weather_pipeline/     # paquete principal: ingestion, preprocessing, features, modelling, evaluation
-├── .openmeteo_cache.sqlite  # cache local de llamadas a Open-Meteo (si aplica)
-├── main.py                  # script / orquestador principal del pipeline
-├── requirements.txt
-├── Makefile                 # tareas útiles (run, clean, train, etc.)
-└── README.md
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ---
 
-## Configuración rápida
+## Ejecución rápida
 
-1. Cloná el repo:
+* Pipeline completo (orquestador):
 
-```bash
-git clone https://github.com/bitazaratustra/ts-weather-pipeline.git
-cd ts-weather-pipeline
-```
+  ```bash
+  python main.py
+  ```
+* Abrir y ejecutar notebooks:
 
-2. Activá el entorno e instalá dependencias (ver sección anterior).
+  ```bash
+  jupyter lab
+  # o
+  jupyter notebook
+  ```
+* Makefile (tareas disponibles según el repositorio):
 
-3. Revisá y editá (si corresponde) los parámetros en `config/`:
-
-   * fechas inicial/final
-   * ubicación / coordenadas
-   * horizonte de predicción (n pasos)
-   * nombre del sensor / variable objetivo (p. ej. `temperature`, `pm2_5`)
-
-4. (Opcional) Si requieres ajustar cache o permisiones: borrá ` .openmeteo_cache.sqlite` para forzar re-descarga.
-
----
-
-## Ejecutar el pipeline
-
-> El repo contiene un `main.py` que sirve como punto de entrada. Su comportamiento por defecto es orquestar las etapas principales: ingestión → preprocesamiento → entrenamiento → evaluación.
-
-Comando rápido (pipeline completo):
-
-```bash
-python main.py
-```
-
-Consejos útiles:
-
-* Para ver opciones/help (si `main.py` implementa argumentos CLI):
-
-```bash
-python main.py --help
-```
-
-* Si preferís ejecutar paso a paso (recomendado mientras probás):
-
-  1. Descargar / actualizar datos (ingest)
-  2. Ejecutar preprocesamiento / features
-  3. Entrenar modelo
-  4. Evaluar y generar reportes
-
-(En muchos proyectos similares eso se hace con flags como `--step ingest` / `--step train`, o con funciones dentro de `ts_weather_pipeline/*.py`. Revisá `main.py` para los flags exactos.)
+  ```bash
+  make help
+  make run
+  ```
 
 ---
 
-## Notebooks
+## Flujo del pipeline (alto nivel)
 
-* Abrí `notebooks/` para ver experimentos reproducibles (EDA, comparación de modelos, tuning).
-* Para abrir Jupyter:
+1. **Ingestión de datos**: descarga de series históricas desde Open-Meteo y almacenamiento en `data/` con cache en `.openmeteo_cache.sqlite`.
+2. **Preprocesamiento**: limpieza temporal, imputación de faltantes y alineamiento de frecuencias.
+3. **Ingeniería de características**: creación de lags, ventanas deslizantes, variables calendario y exógenas.
+4. **Modelado**: comparación entre líneas base (naïve), modelos ARIMA/VAR y modelos secuenciales (LSTM) o basados en atención (Transformer).
+5. **Evaluación**: métricas de error (MAE, RMSE, R²) y visualización de predicciones vs. observaciones.
+6. **Persistencia**: exportación de checkpoints y pronósticos a `models/` y `data/results/`.
 
-```bash
-jupyter lab   # o jupyter notebook
-```
+---
 
-* Si querés ejecutar un notebook desde terminal:
+## Metodología y diseño experimental
 
-```bash
-jupyter nbconvert --to notebook --execute notebooks/tu_notebook.ipynb --output notebooks/out/tu_notebook_executed.ipynb
-```
+* Se emplea *time-aware splitting* (train / validation / test) respetando el orden temporal.
+* Para cada experimento se versionan: parámetros, seed, lista de features y fecha/hora de ejecución.
+* Resultados cuantitativos (MAE / RMSE) y cualitativos (plots temporales) se registran en los notebooks de `notebooks/`.
+
+---
+
+## Datos
+
+* Fuente primaria: **Open-Meteo** (descarga programática).
+* Cache: `.openmeteo_cache.sqlite` para evitar múltiples llamadas y asegurar reproducibilidad de la data adquirida.
 
 ---
 
 ## Salidas esperadas
 
-Al ejecutar el pipeline/ver notebooks deberías obtener:
-
-* Modelos entrenados en `models/` (archivos/Checkpoints).
-* CSVs con pronósticos en `data/` o `results/` (según configuración).
-* Gráficas comparando pronóstico vs real (generadas por notebooks o scripts de evaluación).
-* Logs de entrenamiento / métricas (MAE, RMSE, R² según lo implementado).
+* Modelos entrenados y sus pesos en `models/`.
+* Pronósticos exportados en CSV en `data/` o `results/`.
+* Notebooks ejecutables con gráficos de comparación y tablas de métricas.
 
 ---
 
-## Buenas prácticas y recomendaciones
+## Reproducibilidad científica
 
-* Usá *time-based split* para train/val/test (no mezclá aleatoriamente).
-* Guardá scaler/transformaciones junto con modelos (para reproducibilidad).
-* Evitá *data leakage*: al crear features con ventanas/lags, respetá el orden temporal.
-* Documentá cada experimento: parámetros, seed, rango de fechas y archivos de entrada.
-* Versioná modelos (fecha + métricas) para compararlos fácilmente.
+* Control de dependencias vía `requirements.txt`.
+* Script orquestador único: `main.py` para reproducir el flujo completo.
+* Notebooks documentados para replicar análisis y gráficos.
 
 ---
 
-## Extensiones sugeridas
-
-* Añadir variables exógenas (tráfico, eventos, emisiones industriales).
-* Hacer forecasts probabilísticos (intervalos de confianza).
-* Desplegar modelo como API (FastAPI / Flask) para servir pronósticos.
-* Pipeline orquestado con Airflow/Prefect para ejecución periódica y monitoreo.
-
----
-
-## Problemas comunes
-
-* Si falla la descarga de datos: verificá tu conexión y que las coordenadas/fechas sean válidas.
-* Si modelos no convergen: reducí el LR, aumentá regularización o simplificá la arquitectura (menos capas).
-* Si ves discrepancias entre notebooks y scripts: asegurate de usar las mismas versiones de dependencias y el mismo `requirements.txt`.
-
----
-
-## Licencia y contacto
-
-* Agregá la licencia que prefieras (p. ej. `MIT`) creando un archivo `LICENSE`.
-* Si querés que adapte este README para que incluya comandos específicos (por ejemplo los flags exactos de `main.py`, nombres de notebooks o una lista detallada de dependencias), pegá aquí el contenido de `main.py` y lo ajusto y lo dejo listo para copiar/pegar.
-
----
-
-¡Listo! Este README está preparado para pegarlo directamente en `README.md`. Si querés que lo personalice aún más (p. ej. con ejemplos de salida reales, flags exactos de `main.py` o una lista completa de notebooks), pegame los archivos clave y lo dejo perfecto para tu repo.
-
-```
-::contentReference[oaicite:0]{index=0}
+Fuentes: repositorio y archivos del proyecto en GitHub. :contentReference[oaicite:0]{index=0}
 ```
