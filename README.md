@@ -19,22 +19,39 @@ El pipeline está organizado para fomentar modularidad y experimentación, permi
 Aquí una descripción de los directorios y archivos más relevantes:
 
 ├── config/ # Configuraciones (parámetros, rutas, constantes, etc.)
+
 ├── data/ # Datos crudos y procesados
+
 ├── models/ # Modelos entrenados, checkpoints
+
 ├── notebooks/ # Notebooks exploratorios y experimentales
+
 ├── ts_weather_pipeline/ # Código fuente del pipeline
+
 │ ├── init.py
+
 │ ├── data_ingestion.py
+
 │ ├── preprocessing.py
+
 │ ├── features.py
+
 │ ├── modelling.py
+
 │ ├── evaluation.py
+
 │ └── utils.py
+
 ├── main.py # Punto de entrada al pipeline
+
 ├── requirements.txt # Dependencias de Python
+
 ├── setup.py # Instalación del paquete local (si aplica)
+
 ├── Makefile # Tareas automáticas (por ejemplo: correr pipeline completo)
+
 └── .openmeteo_cache.sqlite # Cache local de llamadas a la API (opcional)
+
 
 markdown
 Copiar código
