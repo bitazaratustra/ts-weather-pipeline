@@ -1,5 +1,5 @@
 ````markdown
-# 🌦️ TS Weather Pipeline  
+#🌦️ TS Weather Pipeline  
 
 **Pipeline reproducible para series temporales de meteorología y calidad del aire.**  
 Proyecto desarrollado como trabajo para la materia *Series Temporales* — Maestría en Data Mining (UBA, 2025).  
