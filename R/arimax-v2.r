@@ -232,7 +232,15 @@ for (pollutant in pollutants) {
 
     # Print model summary
     cat(paste("\n--- Model Summary for", toupper(pollutant), "---\n"))
-    print(summary(fit))
+    
+    # Get the summary object
+    model_summary <- summary(fit)
+    
+    # Remove the 'series' element to prevent it from being printed
+    model_summary$series <- NULL 
+    
+    # Print the modified summary
+    print(model_summary)
 
     # Check significance of the intervention variable
     cat(paste("\n--- Intervention Effect for", toupper(pollutant), "---\n"))
