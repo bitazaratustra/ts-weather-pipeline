@@ -1,0 +1,579 @@
+Inicio del Benchmark: 2025-11-11 15:07:01.632143
+================================================================================
+
+--- INICIO DEL REGISTRO: CNN_SIMPLE ---
+Configuración: {'model': 'CNN_SIMPLE', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3, 'cnn_simple_channels': 64, 'cnn_simple_layers': 8, 'cnn_kernel_size': 3}
+
+--- Using device: cuda ---
+--- Selected Model: CNN_SIMPLE ---
+--- Full Config: Namespace(model='CNN_SIMPLE', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=8, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+Loading data from weather-air-quality-clean.csv.bz2...
+Data loaded and date index set.
+Starting preprocessing and feature engineering...
+Combining 4 columns for target: ['no2_centenario', 'no2_cordoba', 'no2_la_boca', 'no2_openmeteo'] -> no2_target
+Combining 4 columns for target: ['pm10_centenario', 'pm10_cordoba', 'pm10_la_boca', 'pm10_openmeteo'] -> pm10_target
+Combining 5 columns for target: ['co_centenario', 'co_cordoba', 'co_la_boca', 'co_openmeteo', 'co_palermo'] -> co_target
+
+Created 3 target columns: ['no2_target', 'pm10_target', 'co_target']
+Combining primary weather stations (median) with openmeteo (fallback)...
+  -> Combining ['temperature_aeroparque', 'temperature_observatorio'] into temperature_combined (median)
+  -> Using temperature_openmeteo as fallback for temperature_combined
+  -> Combining ['relativehumidity_aeroparque', 'relativehumidity_observatorio'] into relativehumidity_combined (median)
+  -> Using relativehumidity_openmeteo as fallback for relativehumidity_combined
+  -> Combining ['pressure_aeroparque', 'pressure_observatorio'] into pressure_combined (median)
+  -> Using pressure_openmeteo as fallback for pressure_combined
+  -> Combining ['windspeed_aeroparque', 'windspeed_observatorio'] into windspeed_combined (median)
+  -> Using windspeed_openmeteo as fallback for windspeed_combined
+  -> Combining ['windangle_aeroparque', 'windangle_observatorio'] into windangle_combined (median)
+  -> Using windangle_openmeteo as fallback for windangle_combined
+Adding precipitation_openmeteo (has no other sources)
+
+Final features list (6): ['temperature_combined', 'relativehumidity_combined', 'pressure_combined', 'windspeed_combined', 'windangle_combined', 'precipitation_openmeteo']
+
+Interpolating missing values (method='time') for all 13 target/feature columns...
+Dropping any remaining NaN rows (e.g., from start of series)...
+Preprocessing complete. Final dataset shape: (129635, 41)
+Splitting data into train/val (around gap) and anomaly (gap)...
+Training data:   102709 rows (from 2 chunks)
+Validation data: 25678 rows (from 2 chunks)
+Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
+Data scaling complete.
+Creating training and validation sequences...
+Total training sequences: 102565
+Total validation sequences: 25534
+
+--- Initializing model of type: CNN_SIMPLE ---
+Starting model training...
+Epoch 01/50 | Train MSE: 0.918181 | Val MSE: 0.707418 | Val MAE: 0.421269 | Val RMSE: 0.575788
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 02/50 | Train MSE: 0.890956 | Val MSE: 0.706257 | Val MAE: 0.418938 | Val RMSE: 0.573880
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 03/50 | Train MSE: 0.879770 | Val MSE: 0.702753 | Val MAE: 0.410493 | Val RMSE: 0.567492
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 04/50 | Train MSE: 0.868948 | Val MSE: 0.699467 | Val MAE: 0.413607 | Val RMSE: 0.565634
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 05/50 | Train MSE: 0.858215 | Val MSE: 0.697396 | Val MAE: 0.407806 | Val RMSE: 0.562210
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 06/50 | Train MSE: 0.844764 | Val MSE: 0.699021 | Val MAE: 0.410990 | Val RMSE: 0.564440
+Epoch 07/50 | Train MSE: 0.832190 | Val MSE: 0.701910 | Val MAE: 0.409287 | Val RMSE: 0.565945
+Epoch 08/50 | Train MSE: 0.817549 | Val MSE: 0.701837 | Val MAE: 0.409935 | Val RMSE: 0.566048
+Epoch 09/50 | Train MSE: 0.802504 | Val MSE: 0.700187 | Val MAE: 0.405978 | Val RMSE: 0.563071
+Epoch 10/50 | Train MSE: 0.791663 | Val MSE: 0.703756 | Val MAE: 0.411987 | Val RMSE: 0.567928
+Epoch 11/50 | Train MSE: 0.785972 | Val MSE: 0.698488 | Val MAE: 0.411215 | Val RMSE: 0.564426
+Epoch 12/50 | Train MSE: 0.778571 | Val MSE: 0.707080 | Val MAE: 0.409150 | Val RMSE: 0.567338
+Epoch 13/50 | Train MSE: 0.770119 | Val MSE: 0.701139 | Val MAE: 0.409505 | Val RMSE: 0.563926
+Epoch 14/50 | Train MSE: 0.759524 | Val MSE: 0.699496 | Val MAE: 0.410935 | Val RMSE: 0.562973
+Epoch 15/50 | Train MSE: 0.752771 | Val MSE: 0.700610 | Val MAE: 0.404683 | Val RMSE: 0.560440
+Epoch 16/50 | Train MSE: 0.743222 | Val MSE: 0.682638 | Val MAE: 0.399026 | Val RMSE: 0.547182
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 17/50 | Train MSE: 0.737236 | Val MSE: 0.682477 | Val MAE: 0.397545 | Val RMSE: 0.546746
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 18/50 | Train MSE: 0.731286 | Val MSE: 0.673872 | Val MAE: 0.396292 | Val RMSE: 0.540278
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 19/50 | Train MSE: 0.721617 | Val MSE: 0.672703 | Val MAE: 0.393376 | Val RMSE: 0.539006
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 20/50 | Train MSE: 0.717676 | Val MSE: 0.671424 | Val MAE: 0.391693 | Val RMSE: 0.536839
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 21/50 | Train MSE: 0.711684 | Val MSE: 0.670921 | Val MAE: 0.394432 | Val RMSE: 0.536844
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 22/50 | Train MSE: 0.705800 | Val MSE: 0.673810 | Val MAE: 0.391755 | Val RMSE: 0.536583
+Epoch 23/50 | Train MSE: 0.700617 | Val MSE: 0.675939 | Val MAE: 0.392861 | Val RMSE: 0.538315
+Epoch 24/50 | Train MSE: 0.697547 | Val MSE: 0.677747 | Val MAE: 0.396035 | Val RMSE: 0.540406
+Epoch 25/50 | Train MSE: 0.692056 | Val MSE: 0.669457 | Val MAE: 0.392054 | Val RMSE: 0.534390
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 26/50 | Train MSE: 0.685276 | Val MSE: 0.681939 | Val MAE: 0.397804 | Val RMSE: 0.542110
+Epoch 27/50 | Train MSE: 0.680837 | Val MSE: 0.681254 | Val MAE: 0.401577 | Val RMSE: 0.543652
+Epoch 28/50 | Train MSE: 0.670191 | Val MSE: 0.687356 | Val MAE: 0.405742 | Val RMSE: 0.545519
+Epoch 29/50 | Train MSE: 0.653332 | Val MSE: 0.710309 | Val MAE: 0.410139 | Val RMSE: 0.554832
+Epoch 30/50 | Train MSE: 0.639453 | Val MSE: 0.688577 | Val MAE: 0.406819 | Val RMSE: 0.546547
+Epoch 31/50 | Train MSE: 0.632556 | Val MSE: 0.747483 | Val MAE: 0.421718 | Val RMSE: 0.571913
+Epoch 32/50 | Train MSE: 0.622268 | Val MSE: 0.705026 | Val MAE: 0.409982 | Val RMSE: 0.556817
+Epoch 33/50 | Train MSE: 0.612305 | Val MSE: 0.702579 | Val MAE: 0.409717 | Val RMSE: 0.554880
+Epoch 34/50 | Train MSE: 0.604133 | Val MSE: 0.697105 | Val MAE: 0.404737 | Val RMSE: 0.552445
+Epoch 35/50 | Train MSE: 0.594303 | Val MSE: 0.747538 | Val MAE: 0.426007 | Val RMSE: 0.578513
+Epoch 36/50 | Train MSE: 0.595400 | Val MSE: 0.746949 | Val MAE: 0.426319 | Val RMSE: 0.578371
+Epoch 37/50 | Train MSE: 0.577422 | Val MSE: 0.714259 | Val MAE: 0.412098 | Val RMSE: 0.561695
+Epoch 38/50 | Train MSE: 0.586722 | Val MSE: 0.689091 | Val MAE: 0.402575 | Val RMSE: 0.546376
+Epoch 39/50 | Train MSE: 0.576103 | Val MSE: 0.728110 | Val MAE: 0.414320 | Val RMSE: 0.565740
+Epoch 40/50 | Train MSE: 0.566483 | Val MSE: 0.701018 | Val MAE: 0.404578 | Val RMSE: 0.552847
+Early stopping triggered after 40 epochs.
+Training finished.
+Generating predictions for the anomaly period...
+Prediction generation complete.
+Generating Loss (MSE) plot...
+Saved 'multitarget_cnn_simple_curvas_aprendizaje_mse.png' and 'multitarget_cnn_simple_curvas_aprendizaje_mse.svg'
+Generating Error Absoluto Medio (MAE) plot...
+Saved 'multitarget_cnn_simple_curvas_aprendizaje_mae.png' and 'multitarget_cnn_simple_curvas_aprendizaje_mae.svg'
+Generating Raíz del Error Cuadrático Medio (RMSE) plot...
+Saved 'multitarget_cnn_simple_curvas_aprendizaje_rmse.png' and 'multitarget_cnn_simple_curvas_aprendizaje_rmse.svg'
+Generating analysis plots for each pollutant...
+  -> Plotting for NO2...
+Saved 'no2_cnn_simple_anomaly_plot.png' and 'no2_cnn_simple_anomaly_plot.svg'
+Saved 'no2_cnn_simple_residual_plot.png' and 'no2_cnn_simple_residual_plot.svg'
+
+--- Anomaly Analysis Results (NO2) ---
+Average Residual (Period 1): -10.0345
+Average Residual (Period 2): -3.2432
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for PM10...
+Saved 'pm10_cnn_simple_anomaly_plot.png' and 'pm10_cnn_simple_anomaly_plot.svg'
+Saved 'pm10_cnn_simple_residual_plot.png' and 'pm10_cnn_simple_residual_plot.svg'
+
+--- Anomaly Analysis Results (PM10) ---
+Average Residual (Period 1): -11.0381
+Average Residual (Period 2): -7.2115
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for CO...
+Saved 'co_cnn_simple_anomaly_plot.png' and 'co_cnn_simple_anomaly_plot.svg'
+Saved 'co_cnn_simple_residual_plot.png' and 'co_cnn_simple_residual_plot.svg'
+
+--- Anomaly Analysis Results (CO) ---
+Average Residual (Period 1): -0.0486
+Average Residual (Period 2): -0.0676
+(A negative residual means actual pollution was LOWER than predicted)
+
+
+--- Analysis Complete ---
+
+--- FIN DEL REGISTRO: CNN_SIMPLE ---
+================================================================================
+
+--- INICIO DEL REGISTRO: CNN_RESNET ---
+Configuración: {'model': 'CNN_RESNET', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.2, 'cnn_resnet_channels': 64, 'cnn_kernel_size': 3, 'cnn_resnet_blocks': 3}
+
+--- Using device: cuda ---
+--- Selected Model: CNN_RESNET ---
+--- Full Config: Namespace(model='CNN_RESNET', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.2, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+Loading data from weather-air-quality-clean.csv.bz2...
+Data loaded and date index set.
+Starting preprocessing and feature engineering...
+Combining 4 columns for target: ['no2_centenario', 'no2_cordoba', 'no2_la_boca', 'no2_openmeteo'] -> no2_target
+Combining 4 columns for target: ['pm10_centenario', 'pm10_cordoba', 'pm10_la_boca', 'pm10_openmeteo'] -> pm10_target
+Combining 5 columns for target: ['co_centenario', 'co_cordoba', 'co_la_boca', 'co_openmeteo', 'co_palermo'] -> co_target
+
+Created 3 target columns: ['no2_target', 'pm10_target', 'co_target']
+Combining primary weather stations (median) with openmeteo (fallback)...
+  -> Combining ['temperature_aeroparque', 'temperature_observatorio'] into temperature_combined (median)
+  -> Using temperature_openmeteo as fallback for temperature_combined
+  -> Combining ['relativehumidity_aeroparque', 'relativehumidity_observatorio'] into relativehumidity_combined (median)
+  -> Using relativehumidity_openmeteo as fallback for relativehumidity_combined
+  -> Combining ['pressure_aeroparque', 'pressure_observatorio'] into pressure_combined (median)
+  -> Using pressure_openmeteo as fallback for pressure_combined
+  -> Combining ['windspeed_aeroparque', 'windspeed_observatorio'] into windspeed_combined (median)
+  -> Using windspeed_openmeteo as fallback for windspeed_combined
+  -> Combining ['windangle_aeroparque', 'windangle_observatorio'] into windangle_combined (median)
+  -> Using windangle_openmeteo as fallback for windangle_combined
+Adding precipitation_openmeteo (has no other sources)
+
+Final features list (6): ['temperature_combined', 'relativehumidity_combined', 'pressure_combined', 'windspeed_combined', 'windangle_combined', 'precipitation_openmeteo']
+
+Interpolating missing values (method='time') for all 13 target/feature columns...
+Dropping any remaining NaN rows (e.g., from start of series)...
+Preprocessing complete. Final dataset shape: (129635, 41)
+Splitting data into train/val (around gap) and anomaly (gap)...
+Training data:   102709 rows (from 2 chunks)
+Validation data: 25678 rows (from 2 chunks)
+Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
+Data scaling complete.
+Creating training and validation sequences...
+Total training sequences: 102565
+Total validation sequences: 25534
+
+--- Initializing model of type: CNN_RESNET ---
+Starting model training...
+Epoch 01/50 | Train MSE: 0.873345 | Val MSE: 0.781000 | Val MAE: 0.475796 | Val RMSE: 0.626091
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 02/50 | Train MSE: 0.783291 | Val MSE: 0.824019 | Val MAE: 0.484266 | Val RMSE: 0.645628
+Epoch 03/50 | Train MSE: 0.709380 | Val MSE: 0.777969 | Val MAE: 0.467717 | Val RMSE: 0.617239
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 04/50 | Train MSE: 0.658233 | Val MSE: 0.814256 | Val MAE: 0.478060 | Val RMSE: 0.635319
+Epoch 05/50 | Train MSE: 0.622326 | Val MSE: 0.779120 | Val MAE: 0.468478 | Val RMSE: 0.617300
+Epoch 06/50 | Train MSE: 0.595716 | Val MSE: 0.822374 | Val MAE: 0.473954 | Val RMSE: 0.627482
+Epoch 07/50 | Train MSE: 0.583277 | Val MSE: 0.843497 | Val MAE: 0.475018 | Val RMSE: 0.635603
+Epoch 08/50 | Train MSE: 0.561007 | Val MSE: 0.787156 | Val MAE: 0.461053 | Val RMSE: 0.617698
+Epoch 09/50 | Train MSE: 0.547689 | Val MSE: 0.776367 | Val MAE: 0.450900 | Val RMSE: 0.606409
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 10/50 | Train MSE: 0.538867 | Val MSE: 0.744466 | Val MAE: 0.440938 | Val RMSE: 0.592138
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 11/50 | Train MSE: 0.532652 | Val MSE: 0.808028 | Val MAE: 0.461838 | Val RMSE: 0.619405
+Epoch 12/50 | Train MSE: 0.524006 | Val MSE: 0.811773 | Val MAE: 0.465276 | Val RMSE: 0.625208
+Epoch 13/50 | Train MSE: 0.507481 | Val MSE: 0.801970 | Val MAE: 0.464003 | Val RMSE: 0.623207
+Epoch 14/50 | Train MSE: 0.508359 | Val MSE: 0.753765 | Val MAE: 0.442822 | Val RMSE: 0.596345
+Epoch 15/50 | Train MSE: 0.500753 | Val MSE: 0.802608 | Val MAE: 0.452852 | Val RMSE: 0.613970
+Epoch 16/50 | Train MSE: 0.491804 | Val MSE: 0.905217 | Val MAE: 0.485411 | Val RMSE: 0.655462
+Epoch 17/50 | Train MSE: 0.490180 | Val MSE: 0.750020 | Val MAE: 0.441605 | Val RMSE: 0.593880
+Epoch 18/50 | Train MSE: 0.481434 | Val MSE: 0.774330 | Val MAE: 0.454271 | Val RMSE: 0.608089
+Epoch 19/50 | Train MSE: 0.483476 | Val MSE: 0.788830 | Val MAE: 0.459385 | Val RMSE: 0.614558
+Epoch 20/50 | Train MSE: 0.473087 | Val MSE: 0.827757 | Val MAE: 0.461511 | Val RMSE: 0.627077
+Epoch 21/50 | Train MSE: 0.469062 | Val MSE: 0.767983 | Val MAE: 0.448200 | Val RMSE: 0.601598
+Epoch 22/50 | Train MSE: 0.465967 | Val MSE: 0.801391 | Val MAE: 0.449535 | Val RMSE: 0.611600
+Epoch 23/50 | Train MSE: 0.465563 | Val MSE: 0.927005 | Val MAE: 0.476874 | Val RMSE: 0.649901
+Epoch 24/50 | Train MSE: 0.455243 | Val MSE: 0.841335 | Val MAE: 0.463526 | Val RMSE: 0.625032
+Epoch 25/50 | Train MSE: 0.450391 | Val MSE: 0.825823 | Val MAE: 0.463573 | Val RMSE: 0.628440
+Early stopping triggered after 25 epochs.
+Training finished.
+Generating predictions for the anomaly period...
+Prediction generation complete.
+Generating Loss (MSE) plot...
+Saved 'multitarget_cnn_resnet_curvas_aprendizaje_mse.png' and 'multitarget_cnn_resnet_curvas_aprendizaje_mse.svg'
+Generating Error Absoluto Medio (MAE) plot...
+Saved 'multitarget_cnn_resnet_curvas_aprendizaje_mae.png' and 'multitarget_cnn_resnet_curvas_aprendizaje_mae.svg'
+Generating Raíz del Error Cuadrático Medio (RMSE) plot...
+Saved 'multitarget_cnn_resnet_curvas_aprendizaje_rmse.png' and 'multitarget_cnn_resnet_curvas_aprendizaje_rmse.svg'
+Generating analysis plots for each pollutant...
+  -> Plotting for NO2...
+Saved 'no2_cnn_resnet_anomaly_plot.png' and 'no2_cnn_resnet_anomaly_plot.svg'
+Saved 'no2_cnn_resnet_residual_plot.png' and 'no2_cnn_resnet_residual_plot.svg'
+
+--- Anomaly Analysis Results (NO2) ---
+Average Residual (Period 1): -8.2851
+Average Residual (Period 2): -2.7422
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for PM10...
+Saved 'pm10_cnn_resnet_anomaly_plot.png' and 'pm10_cnn_resnet_anomaly_plot.svg'
+Saved 'pm10_cnn_resnet_residual_plot.png' and 'pm10_cnn_resnet_residual_plot.svg'
+
+--- Anomaly Analysis Results (PM10) ---
+Average Residual (Period 1): -13.4389
+Average Residual (Period 2): -7.7883
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for CO...
+Saved 'co_cnn_resnet_anomaly_plot.png' and 'co_cnn_resnet_anomaly_plot.svg'
+Saved 'co_cnn_resnet_residual_plot.png' and 'co_cnn_resnet_residual_plot.svg'
+
+--- Anomaly Analysis Results (CO) ---
+Average Residual (Period 1): -0.0739
+Average Residual (Period 2): 0.0022
+(A negative residual means actual pollution was LOWER than predicted)
+
+
+--- Analysis Complete ---
+
+--- FIN DEL REGISTRO: CNN_RESNET ---
+================================================================================
+
+--- INICIO DEL REGISTRO: LSTM ---
+Configuración: {'model': 'LSTM', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3}
+
+--- Using device: cuda ---
+--- Selected Model: LSTM ---
+--- Full Config: Namespace(model='LSTM', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+Loading data from weather-air-quality-clean.csv.bz2...
+Data loaded and date index set.
+Starting preprocessing and feature engineering...
+Combining 4 columns for target: ['no2_centenario', 'no2_cordoba', 'no2_la_boca', 'no2_openmeteo'] -> no2_target
+Combining 4 columns for target: ['pm10_centenario', 'pm10_cordoba', 'pm10_la_boca', 'pm10_openmeteo'] -> pm10_target
+Combining 5 columns for target: ['co_centenario', 'co_cordoba', 'co_la_boca', 'co_openmeteo', 'co_palermo'] -> co_target
+
+Created 3 target columns: ['no2_target', 'pm10_target', 'co_target']
+Combining primary weather stations (median) with openmeteo (fallback)...
+  -> Combining ['temperature_aeroparque', 'temperature_observatorio'] into temperature_combined (median)
+  -> Using temperature_openmeteo as fallback for temperature_combined
+  -> Combining ['relativehumidity_aeroparque', 'relativehumidity_observatorio'] into relativehumidity_combined (median)
+  -> Using relativehumidity_openmeteo as fallback for relativehumidity_combined
+  -> Combining ['pressure_aeroparque', 'pressure_observatorio'] into pressure_combined (median)
+  -> Using pressure_openmeteo as fallback for pressure_combined
+  -> Combining ['windspeed_aeroparque', 'windspeed_observatorio'] into windspeed_combined (median)
+  -> Using windspeed_openmeteo as fallback for windspeed_combined
+  -> Combining ['windangle_aeroparque', 'windangle_observatorio'] into windangle_combined (median)
+  -> Using windangle_openmeteo as fallback for windangle_combined
+Adding precipitation_openmeteo (has no other sources)
+
+Final features list (6): ['temperature_combined', 'relativehumidity_combined', 'pressure_combined', 'windspeed_combined', 'windangle_combined', 'precipitation_openmeteo']
+
+Interpolating missing values (method='time') for all 13 target/feature columns...
+Dropping any remaining NaN rows (e.g., from start of series)...
+Preprocessing complete. Final dataset shape: (129635, 41)
+Splitting data into train/val (around gap) and anomaly (gap)...
+Training data:   102709 rows (from 2 chunks)
+Validation data: 25678 rows (from 2 chunks)
+Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
+Data scaling complete.
+Creating training and validation sequences...
+Total training sequences: 102565
+Total validation sequences: 25534
+
+--- Initializing model of type: LSTM ---
+Starting model training...
+Epoch 01/50 | Train MSE: 0.884861 | Val MSE: 0.659333 | Val MAE: 0.390836 | Val RMSE: 0.531607
+   (Validation MSE improved. Saving model to best_lstm_model.pth)
+Epoch 02/50 | Train MSE: 0.818344 | Val MSE: 0.648892 | Val MAE: 0.379936 | Val RMSE: 0.517297
+   (Validation MSE improved. Saving model to best_lstm_model.pth)
+Epoch 03/50 | Train MSE: 0.790654 | Val MSE: 0.639844 | Val MAE: 0.370860 | Val RMSE: 0.506523
+   (Validation MSE improved. Saving model to best_lstm_model.pth)
+Epoch 04/50 | Train MSE: 0.772319 | Val MSE: 0.653963 | Val MAE: 0.379049 | Val RMSE: 0.515896
+Epoch 05/50 | Train MSE: 0.755827 | Val MSE: 0.650830 | Val MAE: 0.373256 | Val RMSE: 0.510209
+Epoch 06/50 | Train MSE: 0.742135 | Val MSE: 0.652251 | Val MAE: 0.372363 | Val RMSE: 0.509311
+Epoch 07/50 | Train MSE: 0.730509 | Val MSE: 0.652675 | Val MAE: 0.370898 | Val RMSE: 0.507941
+Epoch 08/50 | Train MSE: 0.713489 | Val MSE: 0.659371 | Val MAE: 0.375749 | Val RMSE: 0.513419
+Epoch 09/50 | Train MSE: 0.701269 | Val MSE: 0.674604 | Val MAE: 0.379900 | Val RMSE: 0.519857
+Epoch 10/50 | Train MSE: 0.685752 | Val MSE: 0.688174 | Val MAE: 0.389214 | Val RMSE: 0.531593
+Epoch 11/50 | Train MSE: 0.673071 | Val MSE: 0.676912 | Val MAE: 0.382491 | Val RMSE: 0.522216
+Epoch 12/50 | Train MSE: 0.660108 | Val MSE: 0.662255 | Val MAE: 0.371427 | Val RMSE: 0.510677
+Epoch 13/50 | Train MSE: 0.645414 | Val MSE: 0.669509 | Val MAE: 0.375744 | Val RMSE: 0.516323
+Epoch 14/50 | Train MSE: 0.633491 | Val MSE: 0.670403 | Val MAE: 0.378446 | Val RMSE: 0.519262
+Epoch 15/50 | Train MSE: 0.623134 | Val MSE: 0.657369 | Val MAE: 0.371924 | Val RMSE: 0.510860
+Epoch 16/50 | Train MSE: 0.610937 | Val MSE: 0.655451 | Val MAE: 0.370147 | Val RMSE: 0.508360
+Epoch 17/50 | Train MSE: 0.603315 | Val MSE: 0.658436 | Val MAE: 0.371533 | Val RMSE: 0.509477
+Epoch 18/50 | Train MSE: 0.589587 | Val MSE: 0.657612 | Val MAE: 0.371322 | Val RMSE: 0.508378
+Early stopping triggered after 18 epochs.
+Training finished.
+Generating predictions for the anomaly period...
+Prediction generation complete.
+Generating Loss (MSE) plot...
+Saved 'multitarget_lstm_curvas_aprendizaje_mse.png' and 'multitarget_lstm_curvas_aprendizaje_mse.svg'
+Generating Error Absoluto Medio (MAE) plot...
+Saved 'multitarget_lstm_curvas_aprendizaje_mae.png' and 'multitarget_lstm_curvas_aprendizaje_mae.svg'
+Generating Raíz del Error Cuadrático Medio (RMSE) plot...
+Saved 'multitarget_lstm_curvas_aprendizaje_rmse.png' and 'multitarget_lstm_curvas_aprendizaje_rmse.svg'
+Generating analysis plots for each pollutant...
+  -> Plotting for NO2...
+Saved 'no2_lstm_anomaly_plot.png' and 'no2_lstm_anomaly_plot.svg'
+Saved 'no2_lstm_residual_plot.png' and 'no2_lstm_residual_plot.svg'
+
+--- Anomaly Analysis Results (NO2) ---
+Average Residual (Period 1): -9.9292
+Average Residual (Period 2): -4.7190
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for PM10...
+Saved 'pm10_lstm_anomaly_plot.png' and 'pm10_lstm_anomaly_plot.svg'
+Saved 'pm10_lstm_residual_plot.png' and 'pm10_lstm_residual_plot.svg'
+
+--- Anomaly Analysis Results (PM10) ---
+Average Residual (Period 1): -11.4819
+Average Residual (Period 2): -10.0303
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for CO...
+Saved 'co_lstm_anomaly_plot.png' and 'co_lstm_anomaly_plot.svg'
+Saved 'co_lstm_residual_plot.png' and 'co_lstm_residual_plot.svg'
+
+--- Anomaly Analysis Results (CO) ---
+Average Residual (Period 1): -0.1417
+Average Residual (Period 2): -0.1456
+(A negative residual means actual pollution was LOWER than predicted)
+
+
+--- Analysis Complete ---
+
+--- FIN DEL REGISTRO: LSTM ---
+================================================================================
+
+--- INICIO DEL REGISTRO: CNN_LSTM ---
+Configuración: {'model': 'CNN_LSTM', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3}
+
+--- Using device: cuda ---
+--- Selected Model: CNN_LSTM ---
+--- Full Config: Namespace(model='CNN_LSTM', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+Loading data from weather-air-quality-clean.csv.bz2...
+Data loaded and date index set.
+Starting preprocessing and feature engineering...
+Combining 4 columns for target: ['no2_centenario', 'no2_cordoba', 'no2_la_boca', 'no2_openmeteo'] -> no2_target
+Combining 4 columns for target: ['pm10_centenario', 'pm10_cordoba', 'pm10_la_boca', 'pm10_openmeteo'] -> pm10_target
+Combining 5 columns for target: ['co_centenario', 'co_cordoba', 'co_la_boca', 'co_openmeteo', 'co_palermo'] -> co_target
+
+Created 3 target columns: ['no2_target', 'pm10_target', 'co_target']
+Combining primary weather stations (median) with openmeteo (fallback)...
+  -> Combining ['temperature_aeroparque', 'temperature_observatorio'] into temperature_combined (median)
+  -> Using temperature_openmeteo as fallback for temperature_combined
+  -> Combining ['relativehumidity_aeroparque', 'relativehumidity_observatorio'] into relativehumidity_combined (median)
+  -> Using relativehumidity_openmeteo as fallback for relativehumidity_combined
+  -> Combining ['pressure_aeroparque', 'pressure_observatorio'] into pressure_combined (median)
+  -> Using pressure_openmeteo as fallback for pressure_combined
+  -> Combining ['windspeed_aeroparque', 'windspeed_observatorio'] into windspeed_combined (median)
+  -> Using windspeed_openmeteo as fallback for windspeed_combined
+  -> Combining ['windangle_aeroparque', 'windangle_observatorio'] into windangle_combined (median)
+  -> Using windangle_openmeteo as fallback for windangle_combined
+Adding precipitation_openmeteo (has no other sources)
+
+Final features list (6): ['temperature_combined', 'relativehumidity_combined', 'pressure_combined', 'windspeed_combined', 'windangle_combined', 'precipitation_openmeteo']
+
+Interpolating missing values (method='time') for all 13 target/feature columns...
+Dropping any remaining NaN rows (e.g., from start of series)...
+Preprocessing complete. Final dataset shape: (129635, 41)
+Splitting data into train/val (around gap) and anomaly (gap)...
+Training data:   102709 rows (from 2 chunks)
+Validation data: 25678 rows (from 2 chunks)
+Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
+Data scaling complete.
+Creating training and validation sequences...
+Total training sequences: 102565
+Total validation sequences: 25534
+
+--- Initializing model of type: CNN_LSTM ---
+Starting model training...
+Epoch 01/50 | Train MSE: 0.885255 | Val MSE: 0.669330 | Val MAE: 0.396428 | Val RMSE: 0.538155
+   (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
+Epoch 02/50 | Train MSE: 0.826659 | Val MSE: 0.642160 | Val MAE: 0.376217 | Val RMSE: 0.512216
+   (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
+Epoch 03/50 | Train MSE: 0.805347 | Val MSE: 0.656884 | Val MAE: 0.385173 | Val RMSE: 0.522889
+Epoch 04/50 | Train MSE: 0.790275 | Val MSE: 0.635997 | Val MAE: 0.371162 | Val RMSE: 0.505402
+   (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
+Epoch 05/50 | Train MSE: 0.777342 | Val MSE: 0.644175 | Val MAE: 0.374486 | Val RMSE: 0.510785
+Epoch 06/50 | Train MSE: 0.766135 | Val MSE: 0.636921 | Val MAE: 0.367770 | Val RMSE: 0.503246
+Epoch 07/50 | Train MSE: 0.753566 | Val MSE: 0.642279 | Val MAE: 0.374140 | Val RMSE: 0.508249
+Epoch 08/50 | Train MSE: 0.737635 | Val MSE: 0.650952 | Val MAE: 0.379635 | Val RMSE: 0.515196
+Epoch 09/50 | Train MSE: 0.720936 | Val MSE: 0.663909 | Val MAE: 0.385503 | Val RMSE: 0.522538
+Epoch 10/50 | Train MSE: 0.707194 | Val MSE: 0.708984 | Val MAE: 0.418371 | Val RMSE: 0.562688
+Epoch 11/50 | Train MSE: 0.695032 | Val MSE: 0.669702 | Val MAE: 0.382602 | Val RMSE: 0.524378
+Epoch 12/50 | Train MSE: 0.681419 | Val MSE: 0.649382 | Val MAE: 0.369753 | Val RMSE: 0.507793
+Epoch 13/50 | Train MSE: 0.664740 | Val MSE: 0.689478 | Val MAE: 0.386272 | Val RMSE: 0.531369
+Epoch 14/50 | Train MSE: 0.650847 | Val MSE: 0.651588 | Val MAE: 0.371686 | Val RMSE: 0.510535
+Epoch 15/50 | Train MSE: 0.635789 | Val MSE: 0.692020 | Val MAE: 0.384811 | Val RMSE: 0.531765
+Epoch 16/50 | Train MSE: 0.618640 | Val MSE: 0.717429 | Val MAE: 0.389686 | Val RMSE: 0.541835
+Epoch 17/50 | Train MSE: 0.609040 | Val MSE: 0.733723 | Val MAE: 0.392429 | Val RMSE: 0.546068
+Epoch 18/50 | Train MSE: 0.590242 | Val MSE: 0.714228 | Val MAE: 0.387224 | Val RMSE: 0.538282
+Epoch 19/50 | Train MSE: 0.577490 | Val MSE: 0.765988 | Val MAE: 0.401081 | Val RMSE: 0.562349
+Early stopping triggered after 19 epochs.
+Training finished.
+Generating predictions for the anomaly period...
+Prediction generation complete.
+Generating Loss (MSE) plot...
+Saved 'multitarget_cnn_lstm_curvas_aprendizaje_mse.png' and 'multitarget_cnn_lstm_curvas_aprendizaje_mse.svg'
+Generating Error Absoluto Medio (MAE) plot...
+Saved 'multitarget_cnn_lstm_curvas_aprendizaje_mae.png' and 'multitarget_cnn_lstm_curvas_aprendizaje_mae.svg'
+Generating Raíz del Error Cuadrático Medio (RMSE) plot...
+Saved 'multitarget_cnn_lstm_curvas_aprendizaje_rmse.png' and 'multitarget_cnn_lstm_curvas_aprendizaje_rmse.svg'
+Generating analysis plots for each pollutant...
+  -> Plotting for NO2...
+Saved 'no2_cnn_lstm_anomaly_plot.png' and 'no2_cnn_lstm_anomaly_plot.svg'
+Saved 'no2_cnn_lstm_residual_plot.png' and 'no2_cnn_lstm_residual_plot.svg'
+
+--- Anomaly Analysis Results (NO2) ---
+Average Residual (Period 1): -10.2997
+Average Residual (Period 2): -4.6966
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for PM10...
+Saved 'pm10_cnn_lstm_anomaly_plot.png' and 'pm10_cnn_lstm_anomaly_plot.svg'
+Saved 'pm10_cnn_lstm_residual_plot.png' and 'pm10_cnn_lstm_residual_plot.svg'
+
+--- Anomaly Analysis Results (PM10) ---
+Average Residual (Period 1): -12.3227
+Average Residual (Period 2): -10.2304
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for CO...
+Saved 'co_cnn_lstm_anomaly_plot.png' and 'co_cnn_lstm_anomaly_plot.svg'
+Saved 'co_cnn_lstm_residual_plot.png' and 'co_cnn_lstm_residual_plot.svg'
+
+--- Anomaly Analysis Results (CO) ---
+Average Residual (Period 1): -0.1129
+Average Residual (Period 2): -0.1228
+(A negative residual means actual pollution was LOWER than predicted)
+
+
+--- Analysis Complete ---
+
+--- FIN DEL REGISTRO: CNN_LSTM ---
+================================================================================
+
+--- INICIO DEL REGISTRO: TRANSFORMER ---
+Configuración: {'model': 'TRANSFORMER', 'epochs': 50, 'patience': 7, 'batch_size': 32, 'seq_len': 72, 'lr': 3e-05, 'weight_decay': 1e-06, 'dropout': 0.1, 'd_model': 128, 'n_head': 8, 'num_encoder_layers': 4, 'dim_feedforward': 256}
+
+--- Using device: cuda ---
+--- Selected Model: TRANSFORMER ---
+--- Full Config: Namespace(model='TRANSFORMER', lr=3e-05, weight_decay=1e-06, epochs=50, patience=7, batch_size=32, seq_len=72, dropout=0.1, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=128, n_head=8, num_encoder_layers=4, dim_feedforward=256) ---
+Loading data from weather-air-quality-clean.csv.bz2...
+Data loaded and date index set.
+Starting preprocessing and feature engineering...
+Combining 4 columns for target: ['no2_centenario', 'no2_cordoba', 'no2_la_boca', 'no2_openmeteo'] -> no2_target
+Combining 4 columns for target: ['pm10_centenario', 'pm10_cordoba', 'pm10_la_boca', 'pm10_openmeteo'] -> pm10_target
+Combining 5 columns for target: ['co_centenario', 'co_cordoba', 'co_la_boca', 'co_openmeteo', 'co_palermo'] -> co_target
+
+Created 3 target columns: ['no2_target', 'pm10_target', 'co_target']
+Combining primary weather stations (median) with openmeteo (fallback)...
+  -> Combining ['temperature_aeroparque', 'temperature_observatorio'] into temperature_combined (median)
+  -> Using temperature_openmeteo as fallback for temperature_combined
+  -> Combining ['relativehumidity_aeroparque', 'relativehumidity_observatorio'] into relativehumidity_combined (median)
+  -> Using relativehumidity_openmeteo as fallback for relativehumidity_combined
+  -> Combining ['pressure_aeroparque', 'pressure_observatorio'] into pressure_combined (median)
+  -> Using pressure_openmeteo as fallback for pressure_combined
+  -> Combining ['windspeed_aeroparque', 'windspeed_observatorio'] into windspeed_combined (median)
+  -> Using windspeed_openmeteo as fallback for windspeed_combined
+  -> Combining ['windangle_aeroparque', 'windangle_observatorio'] into windangle_combined (median)
+  -> Using windangle_openmeteo as fallback for windangle_combined
+Adding precipitation_openmeteo (has no other sources)
+
+Final features list (6): ['temperature_combined', 'relativehumidity_combined', 'pressure_combined', 'windspeed_combined', 'windangle_combined', 'precipitation_openmeteo']
+
+Interpolating missing values (method='time') for all 13 target/feature columns...
+Dropping any remaining NaN rows (e.g., from start of series)...
+Preprocessing complete. Final dataset shape: (129635, 41)
+Splitting data into train/val (around gap) and anomaly (gap)...
+Training data:   102709 rows (from 2 chunks)
+Validation data: 25678 rows (from 2 chunks)
+Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
+Data scaling complete.
+Creating training and validation sequences...
+Total training sequences: 102565
+Total validation sequences: 25534
+
+--- Initializing model of type: TRANSFORMER ---
+Starting model training...
+Epoch 01/50 | Train MSE: 0.863962 | Val MSE: 0.656704 | Val MAE: 0.387554 | Val RMSE: 0.514668
+   (Validation MSE improved. Saving model to best_transformer_model.pth)
+Epoch 02/50 | Train MSE: 0.799639 | Val MSE: 0.660356 | Val MAE: 0.382081 | Val RMSE: 0.509696
+Epoch 03/50 | Train MSE: 0.749899 | Val MSE: 0.655596 | Val MAE: 0.374505 | Val RMSE: 0.501456
+   (Validation MSE improved. Saving model to best_transformer_model.pth)
+Epoch 04/50 | Train MSE: 0.703187 | Val MSE: 0.656497 | Val MAE: 0.376778 | Val RMSE: 0.504676
+Epoch 05/50 | Train MSE: 0.656267 | Val MSE: 0.655447 | Val MAE: 0.378760 | Val RMSE: 0.507268
+   (Validation MSE improved. Saving model to best_transformer_model.pth)
+Epoch 06/50 | Train MSE: 0.610076 | Val MSE: 0.667039 | Val MAE: 0.386198 | Val RMSE: 0.517266
+Epoch 07/50 | Train MSE: 0.572390 | Val MSE: 0.653800 | Val MAE: 0.376619 | Val RMSE: 0.507371
+   (Validation MSE improved. Saving model to best_transformer_model.pth)
+Epoch 08/50 | Train MSE: 0.536671 | Val MSE: 0.679324 | Val MAE: 0.390257 | Val RMSE: 0.527198
+Epoch 09/50 | Train MSE: 0.503675 | Val MSE: 0.664895 | Val MAE: 0.380665 | Val RMSE: 0.514375
+Epoch 10/50 | Train MSE: 0.472841 | Val MSE: 0.666569 | Val MAE: 0.378968 | Val RMSE: 0.512754
+Epoch 11/50 | Train MSE: 0.454059 | Val MSE: 0.670620 | Val MAE: 0.382165 | Val RMSE: 0.515894
+Epoch 12/50 | Train MSE: 0.435057 | Val MSE: 0.674276 | Val MAE: 0.384333 | Val RMSE: 0.520322
+Epoch 13/50 | Train MSE: 0.414492 | Val MSE: 0.684385 | Val MAE: 0.388289 | Val RMSE: 0.526881
+Epoch 14/50 | Train MSE: 0.398298 | Val MSE: 0.698292 | Val MAE: 0.393744 | Val RMSE: 0.532214
+Early stopping triggered after 14 epochs.
+Training finished.
+Generating predictions for the anomaly period...
+Prediction generation complete.
+Generating Loss (MSE) plot...
+Saved 'multitarget_transformer_curvas_aprendizaje_mse.png' and 'multitarget_transformer_curvas_aprendizaje_mse.svg'
+Generating Error Absoluto Medio (MAE) plot...
+Saved 'multitarget_transformer_curvas_aprendizaje_mae.png' and 'multitarget_transformer_curvas_aprendizaje_mae.svg'
+Generating Raíz del Error Cuadrático Medio (RMSE) plot...
+Saved 'multitarget_transformer_curvas_aprendizaje_rmse.png' and 'multitarget_transformer_curvas_aprendizaje_rmse.svg'
+Generating analysis plots for each pollutant...
+  -> Plotting for NO2...
+Saved 'no2_transformer_anomaly_plot.png' and 'no2_transformer_anomaly_plot.svg'
+Saved 'no2_transformer_residual_plot.png' and 'no2_transformer_residual_plot.svg'
+
+--- Anomaly Analysis Results (NO2) ---
+Average Residual (Period 1): -9.0397
+Average Residual (Period 2): -3.6085
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for PM10...
+Saved 'pm10_transformer_anomaly_plot.png' and 'pm10_transformer_anomaly_plot.svg'
+Saved 'pm10_transformer_residual_plot.png' and 'pm10_transformer_residual_plot.svg'
+
+--- Anomaly Analysis Results (PM10) ---
+Average Residual (Period 1): -11.9239
+Average Residual (Period 2): -9.6385
+(A negative residual means actual pollution was LOWER than predicted)
+
+  -> Plotting for CO...
+Saved 'co_transformer_anomaly_plot.png' and 'co_transformer_anomaly_plot.svg'
+Saved 'co_transformer_residual_plot.png' and 'co_transformer_residual_plot.svg'
+
+--- Anomaly Analysis Results (CO) ---
+Average Residual (Period 1): -0.1320
+Average Residual (Period 2): -0.1194
+(A negative residual means actual pollution was LOWER than predicted)
+
+
+--- Analysis Complete ---
+
+--- FIN DEL REGISTRO: TRANSFORMER ---
+================================================================================
