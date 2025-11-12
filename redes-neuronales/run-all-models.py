@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 """
-Script de Ejecución (Runner) v5
+Script de Ejecución (Runner) v8
 
 Este script ejecuta 'analyze.py' para cada una de las
 arquitecturas.
 
-v5: Re-introduce la CNN simple como "CNN_SIMPLE" y renombra
-    la ResNet a "CNN_RESNET", para un total de 5 arquitecturas.
+v8: Añade la bandera 'validation_strategy' para elegir entre
+    "interleaved" (bloques rotativos) y "simple" (80/20).
 """
 
 import subprocess
@@ -25,20 +25,25 @@ LOG_FILE = 'model_benchmark_log.txt'
 MODEL_CONFIGS = [
     {
         "model": "CNN_SIMPLE",
-        "epochs": 50,
-        "patience": 15,
+        "validation_strategy": "simple", # <-- NUEVA BANDERA: "interleaved" o "simple"
+        "plot_fit": True,
+        "epochs": 300,
+        "patience": 150,
         "batch_size": 64,
         "seq_len": 72,
         "lr": 1e-4,
         "weight_decay": 1e-5,
         "dropout": 0.3,
-        # --- Parámetros de CNN Simple ---
-        "cnn_simple_channels": 64,  # Canales en cada capa
-        "cnn_simple_layers": 8,     # <-- ¡Controla la profundidad!
+        "cnn_simple_channels": 64,
+        "cnn_simple_layers": 3,
         "cnn_kernel_size": 3,
+        "train_split_days": 240, # Usado solo si validation_strategy="interleaved"
+        "val_split_days": 60,    # Usado solo si validation_strategy="interleaved"
     },
     {
         "model": "CNN_RESNET",
+        "validation_strategy": "simple",
+        "plot_fit": True,
         "epochs": 50,
         "patience": 15,
         "batch_size": 64,
@@ -46,33 +51,44 @@ MODEL_CONFIGS = [
         "lr": 1e-4,
         "weight_decay": 1e-5,
         "dropout": 0.2,
-        # --- Parámetros de CNN ResNet ---
         "cnn_resnet_channels": 64,
         "cnn_kernel_size": 3,
-        "cnn_resnet_blocks": 3
+        "cnn_resnet_blocks": 3,
+        "train_split_days": 240,
+        "val_split_days": 60,
     },
     {
         "model": "LSTM",
-        "epochs": 50,
+        "validation_strategy": "simple",
+        "plot_fit": True,
+        "epochs": 100,
         "patience": 15,
         "batch_size": 64,
         "seq_len": 72,
         "lr": 1e-4,
         "weight_decay": 1e-5,
         "dropout": 0.3,
+        "train_split_days": 240,
+        "val_split_days": 60,
     },
     {
         "model": "CNN_LSTM",
-        "epochs": 50,
+        "validation_strategy": "simple",
+        "plot_fit": True,
+        "epochs": 100,
         "patience": 15,
         "batch_size": 64,
         "seq_len": 72,
         "lr": 1e-4,
         "weight_decay": 1e-5,
         "dropout": 0.3,
+        "train_split_days": 240,
+        "val_split_days": 60,
     },
     {
         "model": "TRANSFORMER",
+        "validation_strategy": "simple",
+        "plot_fit": True,
         "epochs": 50,
         "patience": 7,
         "batch_size": 32,
@@ -84,6 +100,8 @@ MODEL_CONFIGS = [
         "n_head": 8,
         "num_encoder_layers": 4,
         "dim_feedforward": 256,
+        "train_split_days": 240,
+        "val_split_days": 60,
     }
 ]
 
@@ -105,15 +123,18 @@ def main():
     # Iterar sobre cada configuración de modelo
     for config in MODEL_CONFIGS:
         arch = config['model']
-        print(f"--- [ {datetime.now().strftime('%H:%M:%S')} ] INICIANDO: {arch} ---")
+        print(f"--- [ {datetime.now().strftime('%H:%M:%S')} ] INICIANDO: {arch} (Estrategia: {config.get('validation_strategy', 'simple')}) ---")
         
         # Construir el comando con todos los argumentos
         command = ['python', SCRIPT_TO_RUN]
         for key, value in config.items():
-            command.append(f'--{key}')
-            command.append(str(value))
+            if isinstance(value, bool):
+                if value:
+                    command.append(f'--{key}')
+            else:
+                command.append(f'--{key}')
+                command.append(str(value))
         
-        # Imprimir el comando que se va a ejecutar (para depuración)
         print(f"    Ejecutando: {' '.join(command)}")
 
         try:
@@ -123,7 +144,7 @@ def main():
                 capture_output=True, 
                 text=True, 
                 encoding='utf-8', 
-                check=True # Lanza una excepción si el script falla
+                check=True
             )
             
             # Si tiene éxito, escribir stdout en el log
@@ -137,7 +158,7 @@ def main():
             print(f"--- [ {datetime.now().strftime('%H:%M:%S')} ] COMPLETADO: {arch} ---")
 
         except subprocess.CalledProcessError as e:
-            # Si el script falla (returncode != 0)
+            # Si el script falla
             print(f"--- [ {datetime.now().strftime('%H:%M:%S')} ] ¡ERROR! FALLÓ: {arch} ---")
             print(f"    Ver {LOG_FILE} para detalles del error.")
             with open(LOG_FILE, 'a', encoding='utf-8') as f:

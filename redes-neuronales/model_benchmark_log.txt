@@ -1,12 +1,12 @@
-Inicio del Benchmark: 2025-11-11 15:07:01.632143
+Inicio del Benchmark: 2025-11-12 07:18:09.512040
 ================================================================================
 
 --- INICIO DEL REGISTRO: CNN_SIMPLE ---
-Configuración: {'model': 'CNN_SIMPLE', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3, 'cnn_simple_channels': 64, 'cnn_simple_layers': 8, 'cnn_kernel_size': 3}
+Configuración: {'model': 'CNN_SIMPLE', 'validation_strategy': 'simple', 'plot_fit': True, 'epochs': 300, 'patience': 150, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3, 'cnn_simple_channels': 64, 'cnn_simple_layers': 3, 'cnn_kernel_size': 3, 'train_split_days': 240, 'val_split_days': 60}
 
 --- Using device: cuda ---
 --- Selected Model: CNN_SIMPLE ---
---- Full Config: Namespace(model='CNN_SIMPLE', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=8, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+--- Full Config: Namespace(model='CNN_SIMPLE', lr=0.0001, weight_decay=1e-05, epochs=300, patience=150, batch_size=64, seq_len=72, validation_strategy='simple', train_split_days=240, val_split_days=60, validation_split_ratio=0.2, plot_fit=True, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
 Loading data from weather-air-quality-clean.csv.bz2...
 Data loaded and date index set.
 Starting preprocessing and feature engineering...
@@ -33,70 +33,347 @@ Final features list (6): ['temperature_combined', 'relativehumidity_combined', '
 Interpolating missing values (method='time') for all 13 target/feature columns...
 Dropping any remaining NaN rows (e.g., from start of series)...
 Preprocessing complete. Final dataset shape: (129635, 41)
-Splitting data into train/val (around gap) and anomaly (gap)...
-Training data:   102709 rows (from 2 chunks)
-Validation data: 25678 rows (from 2 chunks)
-Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
-Data scaling complete.
-Creating training and validation sequences...
+Splitting data with SIMPLE validation strategy (80/20 split per-block)...
+Created 2 training chunks and 2 validation chunks.
+Scalers fitted on all training chunks.
 Total training sequences: 102565
 Total validation sequences: 25534
 
 --- Initializing model of type: CNN_SIMPLE ---
 Starting model training...
-Epoch 01/50 | Train MSE: 0.918181 | Val MSE: 0.707418 | Val MAE: 0.421269 | Val RMSE: 0.575788
+Epoch 01/300 | Train MSE: 0.869603 | Val MSE: 0.530799 | Val MAE: 0.556559 | Val RMSE: 0.693358
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 02/50 | Train MSE: 0.890956 | Val MSE: 0.706257 | Val MAE: 0.418938 | Val RMSE: 0.573880
+Epoch 02/300 | Train MSE: 0.843622 | Val MSE: 0.529360 | Val MAE: 0.552962 | Val RMSE: 0.691046
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 03/50 | Train MSE: 0.879770 | Val MSE: 0.702753 | Val MAE: 0.410493 | Val RMSE: 0.567492
+Epoch 03/300 | Train MSE: 0.832752 | Val MSE: 0.521296 | Val MAE: 0.549194 | Val RMSE: 0.685610
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 04/50 | Train MSE: 0.868948 | Val MSE: 0.699467 | Val MAE: 0.413607 | Val RMSE: 0.565634
+Epoch 04/300 | Train MSE: 0.822841 | Val MSE: 0.523619 | Val MAE: 0.551998 | Val RMSE: 0.687121
+Epoch 05/300 | Train MSE: 0.814293 | Val MSE: 0.509872 | Val MAE: 0.538049 | Val RMSE: 0.675692
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 05/50 | Train MSE: 0.858215 | Val MSE: 0.697396 | Val MAE: 0.407806 | Val RMSE: 0.562210
+Epoch 06/300 | Train MSE: 0.807374 | Val MSE: 0.509617 | Val MAE: 0.539678 | Val RMSE: 0.676552
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 06/50 | Train MSE: 0.844764 | Val MSE: 0.699021 | Val MAE: 0.410990 | Val RMSE: 0.564440
-Epoch 07/50 | Train MSE: 0.832190 | Val MSE: 0.701910 | Val MAE: 0.409287 | Val RMSE: 0.565945
-Epoch 08/50 | Train MSE: 0.817549 | Val MSE: 0.701837 | Val MAE: 0.409935 | Val RMSE: 0.566048
-Epoch 09/50 | Train MSE: 0.802504 | Val MSE: 0.700187 | Val MAE: 0.405978 | Val RMSE: 0.563071
-Epoch 10/50 | Train MSE: 0.791663 | Val MSE: 0.703756 | Val MAE: 0.411987 | Val RMSE: 0.567928
-Epoch 11/50 | Train MSE: 0.785972 | Val MSE: 0.698488 | Val MAE: 0.411215 | Val RMSE: 0.564426
-Epoch 12/50 | Train MSE: 0.778571 | Val MSE: 0.707080 | Val MAE: 0.409150 | Val RMSE: 0.567338
-Epoch 13/50 | Train MSE: 0.770119 | Val MSE: 0.701139 | Val MAE: 0.409505 | Val RMSE: 0.563926
-Epoch 14/50 | Train MSE: 0.759524 | Val MSE: 0.699496 | Val MAE: 0.410935 | Val RMSE: 0.562973
-Epoch 15/50 | Train MSE: 0.752771 | Val MSE: 0.700610 | Val MAE: 0.404683 | Val RMSE: 0.560440
-Epoch 16/50 | Train MSE: 0.743222 | Val MSE: 0.682638 | Val MAE: 0.399026 | Val RMSE: 0.547182
+Epoch 07/300 | Train MSE: 0.801055 | Val MSE: 0.511132 | Val MAE: 0.538418 | Val RMSE: 0.676701
+Epoch 08/300 | Train MSE: 0.795317 | Val MSE: 0.508711 | Val MAE: 0.536618 | Val RMSE: 0.674787
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 17/50 | Train MSE: 0.737236 | Val MSE: 0.682477 | Val MAE: 0.397545 | Val RMSE: 0.546746
+Epoch 09/300 | Train MSE: 0.788890 | Val MSE: 0.505817 | Val MAE: 0.535780 | Val RMSE: 0.672939
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 18/50 | Train MSE: 0.731286 | Val MSE: 0.673872 | Val MAE: 0.396292 | Val RMSE: 0.540278
+Epoch 10/300 | Train MSE: 0.782986 | Val MSE: 0.508741 | Val MAE: 0.537964 | Val RMSE: 0.675373
+Epoch 11/300 | Train MSE: 0.776361 | Val MSE: 0.509084 | Val MAE: 0.541826 | Val RMSE: 0.676450
+Epoch 12/300 | Train MSE: 0.771461 | Val MSE: 0.503144 | Val MAE: 0.535569 | Val RMSE: 0.671613
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 19/50 | Train MSE: 0.721617 | Val MSE: 0.672703 | Val MAE: 0.393376 | Val RMSE: 0.539006
+Epoch 13/300 | Train MSE: 0.765392 | Val MSE: 0.515716 | Val MAE: 0.548802 | Val RMSE: 0.681621
+Epoch 14/300 | Train MSE: 0.761116 | Val MSE: 0.504917 | Val MAE: 0.536978 | Val RMSE: 0.672540
+Epoch 15/300 | Train MSE: 0.755673 | Val MSE: 0.501073 | Val MAE: 0.530812 | Val RMSE: 0.669001
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 20/50 | Train MSE: 0.717676 | Val MSE: 0.671424 | Val MAE: 0.391693 | Val RMSE: 0.536839
+Epoch 16/300 | Train MSE: 0.748075 | Val MSE: 0.509730 | Val MAE: 0.533091 | Val RMSE: 0.674052
+Epoch 17/300 | Train MSE: 0.742921 | Val MSE: 0.500548 | Val MAE: 0.532845 | Val RMSE: 0.669488
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 21/50 | Train MSE: 0.711684 | Val MSE: 0.670921 | Val MAE: 0.394432 | Val RMSE: 0.536844
+Epoch 18/300 | Train MSE: 0.738652 | Val MSE: 0.495108 | Val MAE: 0.532047 | Val RMSE: 0.666919
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 22/50 | Train MSE: 0.705800 | Val MSE: 0.673810 | Val MAE: 0.391755 | Val RMSE: 0.536583
-Epoch 23/50 | Train MSE: 0.700617 | Val MSE: 0.675939 | Val MAE: 0.392861 | Val RMSE: 0.538315
-Epoch 24/50 | Train MSE: 0.697547 | Val MSE: 0.677747 | Val MAE: 0.396035 | Val RMSE: 0.540406
-Epoch 25/50 | Train MSE: 0.692056 | Val MSE: 0.669457 | Val MAE: 0.392054 | Val RMSE: 0.534390
+Epoch 19/300 | Train MSE: 0.733042 | Val MSE: 0.502217 | Val MAE: 0.532020 | Val RMSE: 0.670857
+Epoch 20/300 | Train MSE: 0.728851 | Val MSE: 0.495793 | Val MAE: 0.534151 | Val RMSE: 0.667382
+Epoch 21/300 | Train MSE: 0.723058 | Val MSE: 0.497250 | Val MAE: 0.533578 | Val RMSE: 0.668527
+Epoch 22/300 | Train MSE: 0.719902 | Val MSE: 0.496046 | Val MAE: 0.534455 | Val RMSE: 0.667437
+Epoch 23/300 | Train MSE: 0.716110 | Val MSE: 0.497367 | Val MAE: 0.530734 | Val RMSE: 0.667771
+Epoch 24/300 | Train MSE: 0.710513 | Val MSE: 0.484742 | Val MAE: 0.526653 | Val RMSE: 0.659321
    (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
-Epoch 26/50 | Train MSE: 0.685276 | Val MSE: 0.681939 | Val MAE: 0.397804 | Val RMSE: 0.542110
-Epoch 27/50 | Train MSE: 0.680837 | Val MSE: 0.681254 | Val MAE: 0.401577 | Val RMSE: 0.543652
-Epoch 28/50 | Train MSE: 0.670191 | Val MSE: 0.687356 | Val MAE: 0.405742 | Val RMSE: 0.545519
-Epoch 29/50 | Train MSE: 0.653332 | Val MSE: 0.710309 | Val MAE: 0.410139 | Val RMSE: 0.554832
-Epoch 30/50 | Train MSE: 0.639453 | Val MSE: 0.688577 | Val MAE: 0.406819 | Val RMSE: 0.546547
-Epoch 31/50 | Train MSE: 0.632556 | Val MSE: 0.747483 | Val MAE: 0.421718 | Val RMSE: 0.571913
-Epoch 32/50 | Train MSE: 0.622268 | Val MSE: 0.705026 | Val MAE: 0.409982 | Val RMSE: 0.556817
-Epoch 33/50 | Train MSE: 0.612305 | Val MSE: 0.702579 | Val MAE: 0.409717 | Val RMSE: 0.554880
-Epoch 34/50 | Train MSE: 0.604133 | Val MSE: 0.697105 | Val MAE: 0.404737 | Val RMSE: 0.552445
-Epoch 35/50 | Train MSE: 0.594303 | Val MSE: 0.747538 | Val MAE: 0.426007 | Val RMSE: 0.578513
-Epoch 36/50 | Train MSE: 0.595400 | Val MSE: 0.746949 | Val MAE: 0.426319 | Val RMSE: 0.578371
-Epoch 37/50 | Train MSE: 0.577422 | Val MSE: 0.714259 | Val MAE: 0.412098 | Val RMSE: 0.561695
-Epoch 38/50 | Train MSE: 0.586722 | Val MSE: 0.689091 | Val MAE: 0.402575 | Val RMSE: 0.546376
-Epoch 39/50 | Train MSE: 0.576103 | Val MSE: 0.728110 | Val MAE: 0.414320 | Val RMSE: 0.565740
-Epoch 40/50 | Train MSE: 0.566483 | Val MSE: 0.701018 | Val MAE: 0.404578 | Val RMSE: 0.552847
-Early stopping triggered after 40 epochs.
+Epoch 25/300 | Train MSE: 0.705021 | Val MSE: 0.489073 | Val MAE: 0.528164 | Val RMSE: 0.662267
+Epoch 26/300 | Train MSE: 0.701242 | Val MSE: 0.491331 | Val MAE: 0.528505 | Val RMSE: 0.664148
+Epoch 27/300 | Train MSE: 0.697487 | Val MSE: 0.496173 | Val MAE: 0.527790 | Val RMSE: 0.665831
+Epoch 28/300 | Train MSE: 0.693204 | Val MSE: 0.493269 | Val MAE: 0.527332 | Val RMSE: 0.665394
+Epoch 29/300 | Train MSE: 0.689466 | Val MSE: 0.490420 | Val MAE: 0.527589 | Val RMSE: 0.664123
+Epoch 30/300 | Train MSE: 0.684330 | Val MSE: 0.485854 | Val MAE: 0.524898 | Val RMSE: 0.660001
+Epoch 31/300 | Train MSE: 0.681557 | Val MSE: 0.491855 | Val MAE: 0.527386 | Val RMSE: 0.663676
+Epoch 32/300 | Train MSE: 0.678007 | Val MSE: 0.491185 | Val MAE: 0.524308 | Val RMSE: 0.662234
+Epoch 33/300 | Train MSE: 0.674133 | Val MSE: 0.476383 | Val MAE: 0.522089 | Val RMSE: 0.654493
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 34/300 | Train MSE: 0.668924 | Val MSE: 0.499788 | Val MAE: 0.528519 | Val RMSE: 0.668515
+Epoch 35/300 | Train MSE: 0.665383 | Val MSE: 0.477685 | Val MAE: 0.522960 | Val RMSE: 0.656350
+Epoch 36/300 | Train MSE: 0.663495 | Val MSE: 0.489582 | Val MAE: 0.523234 | Val RMSE: 0.661706
+Epoch 37/300 | Train MSE: 0.660788 | Val MSE: 0.487231 | Val MAE: 0.522527 | Val RMSE: 0.659726
+Epoch 38/300 | Train MSE: 0.655028 | Val MSE: 0.475121 | Val MAE: 0.521723 | Val RMSE: 0.653804
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 39/300 | Train MSE: 0.652144 | Val MSE: 0.481449 | Val MAE: 0.522426 | Val RMSE: 0.658109
+Epoch 40/300 | Train MSE: 0.649224 | Val MSE: 0.466544 | Val MAE: 0.518299 | Val RMSE: 0.647991
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 41/300 | Train MSE: 0.647026 | Val MSE: 0.471638 | Val MAE: 0.521343 | Val RMSE: 0.651800
+Epoch 42/300 | Train MSE: 0.644258 | Val MSE: 0.473218 | Val MAE: 0.517130 | Val RMSE: 0.651564
+Epoch 43/300 | Train MSE: 0.642855 | Val MSE: 0.467203 | Val MAE: 0.516811 | Val RMSE: 0.648323
+Epoch 44/300 | Train MSE: 0.638157 | Val MSE: 0.475301 | Val MAE: 0.518398 | Val RMSE: 0.651902
+Epoch 45/300 | Train MSE: 0.634813 | Val MSE: 0.466287 | Val MAE: 0.514752 | Val RMSE: 0.647105
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 46/300 | Train MSE: 0.633064 | Val MSE: 0.475136 | Val MAE: 0.519179 | Val RMSE: 0.652538
+Epoch 47/300 | Train MSE: 0.628773 | Val MSE: 0.472062 | Val MAE: 0.516031 | Val RMSE: 0.649200
+Epoch 48/300 | Train MSE: 0.627335 | Val MSE: 0.459252 | Val MAE: 0.513342 | Val RMSE: 0.642294
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 49/300 | Train MSE: 0.625183 | Val MSE: 0.469383 | Val MAE: 0.514829 | Val RMSE: 0.647344
+Epoch 50/300 | Train MSE: 0.622336 | Val MSE: 0.459145 | Val MAE: 0.511457 | Val RMSE: 0.641688
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 51/300 | Train MSE: 0.622055 | Val MSE: 0.464542 | Val MAE: 0.516667 | Val RMSE: 0.646715
+Epoch 52/300 | Train MSE: 0.617507 | Val MSE: 0.469968 | Val MAE: 0.513697 | Val RMSE: 0.646137
+Epoch 53/300 | Train MSE: 0.615431 | Val MSE: 0.462838 | Val MAE: 0.518364 | Val RMSE: 0.646493
+Epoch 54/300 | Train MSE: 0.615236 | Val MSE: 0.460829 | Val MAE: 0.509990 | Val RMSE: 0.641248
+Epoch 55/300 | Train MSE: 0.610031 | Val MSE: 0.456069 | Val MAE: 0.510829 | Val RMSE: 0.639698
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 56/300 | Train MSE: 0.609720 | Val MSE: 0.458741 | Val MAE: 0.509702 | Val RMSE: 0.640096
+Epoch 57/300 | Train MSE: 0.607767 | Val MSE: 0.452430 | Val MAE: 0.509510 | Val RMSE: 0.637368
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 58/300 | Train MSE: 0.606096 | Val MSE: 0.455537 | Val MAE: 0.510698 | Val RMSE: 0.639485
+Epoch 59/300 | Train MSE: 0.603416 | Val MSE: 0.457821 | Val MAE: 0.512906 | Val RMSE: 0.640997
+Epoch 60/300 | Train MSE: 0.602716 | Val MSE: 0.458839 | Val MAE: 0.509907 | Val RMSE: 0.640111
+Epoch 61/300 | Train MSE: 0.599453 | Val MSE: 0.455435 | Val MAE: 0.509215 | Val RMSE: 0.638594
+Epoch 62/300 | Train MSE: 0.599579 | Val MSE: 0.455062 | Val MAE: 0.509535 | Val RMSE: 0.638434
+Epoch 63/300 | Train MSE: 0.597267 | Val MSE: 0.451440 | Val MAE: 0.507783 | Val RMSE: 0.636701
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 64/300 | Train MSE: 0.595771 | Val MSE: 0.455977 | Val MAE: 0.507202 | Val RMSE: 0.638283
+Epoch 65/300 | Train MSE: 0.593532 | Val MSE: 0.447838 | Val MAE: 0.505190 | Val RMSE: 0.633771
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 66/300 | Train MSE: 0.592255 | Val MSE: 0.449876 | Val MAE: 0.506133 | Val RMSE: 0.634824
+Epoch 67/300 | Train MSE: 0.588030 | Val MSE: 0.460519 | Val MAE: 0.509472 | Val RMSE: 0.641352
+Epoch 68/300 | Train MSE: 0.586338 | Val MSE: 0.461320 | Val MAE: 0.507974 | Val RMSE: 0.640524
+Epoch 69/300 | Train MSE: 0.587246 | Val MSE: 0.448782 | Val MAE: 0.510064 | Val RMSE: 0.635650
+Epoch 70/300 | Train MSE: 0.584755 | Val MSE: 0.459719 | Val MAE: 0.506524 | Val RMSE: 0.638512
+Epoch 71/300 | Train MSE: 0.580513 | Val MSE: 0.446482 | Val MAE: 0.506998 | Val RMSE: 0.633155
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 72/300 | Train MSE: 0.581926 | Val MSE: 0.444037 | Val MAE: 0.506732 | Val RMSE: 0.631753
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 73/300 | Train MSE: 0.579615 | Val MSE: 0.447812 | Val MAE: 0.503951 | Val RMSE: 0.633183
+Epoch 74/300 | Train MSE: 0.577567 | Val MSE: 0.450566 | Val MAE: 0.506594 | Val RMSE: 0.635122
+Epoch 75/300 | Train MSE: 0.577461 | Val MSE: 0.452973 | Val MAE: 0.509281 | Val RMSE: 0.636263
+Epoch 76/300 | Train MSE: 0.574258 | Val MSE: 0.449297 | Val MAE: 0.506061 | Val RMSE: 0.633233
+Epoch 77/300 | Train MSE: 0.572435 | Val MSE: 0.447585 | Val MAE: 0.504154 | Val RMSE: 0.633192
+Epoch 78/300 | Train MSE: 0.573133 | Val MSE: 0.448705 | Val MAE: 0.505587 | Val RMSE: 0.632090
+Epoch 79/300 | Train MSE: 0.569127 | Val MSE: 0.452039 | Val MAE: 0.507116 | Val RMSE: 0.635603
+Epoch 80/300 | Train MSE: 0.569199 | Val MSE: 0.455573 | Val MAE: 0.507615 | Val RMSE: 0.637259
+Epoch 81/300 | Train MSE: 0.570097 | Val MSE: 0.448311 | Val MAE: 0.506422 | Val RMSE: 0.634537
+Epoch 82/300 | Train MSE: 0.565640 | Val MSE: 0.453752 | Val MAE: 0.504905 | Val RMSE: 0.636049
+Epoch 83/300 | Train MSE: 0.563260 | Val MSE: 0.448933 | Val MAE: 0.510628 | Val RMSE: 0.635036
+Epoch 84/300 | Train MSE: 0.564041 | Val MSE: 0.459536 | Val MAE: 0.508708 | Val RMSE: 0.640081
+Epoch 85/300 | Train MSE: 0.564202 | Val MSE: 0.445149 | Val MAE: 0.505516 | Val RMSE: 0.631649
+Epoch 86/300 | Train MSE: 0.560772 | Val MSE: 0.442001 | Val MAE: 0.505840 | Val RMSE: 0.631396
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 87/300 | Train MSE: 0.559348 | Val MSE: 0.456727 | Val MAE: 0.509053 | Val RMSE: 0.638674
+Epoch 88/300 | Train MSE: 0.558243 | Val MSE: 0.454807 | Val MAE: 0.509522 | Val RMSE: 0.638626
+Epoch 89/300 | Train MSE: 0.555617 | Val MSE: 0.451567 | Val MAE: 0.508235 | Val RMSE: 0.635183
+Epoch 90/300 | Train MSE: 0.556986 | Val MSE: 0.454236 | Val MAE: 0.507697 | Val RMSE: 0.637103
+Epoch 91/300 | Train MSE: 0.555086 | Val MSE: 0.448909 | Val MAE: 0.509012 | Val RMSE: 0.634374
+Epoch 92/300 | Train MSE: 0.553320 | Val MSE: 0.447284 | Val MAE: 0.505913 | Val RMSE: 0.633159
+Epoch 93/300 | Train MSE: 0.552378 | Val MSE: 0.447548 | Val MAE: 0.506711 | Val RMSE: 0.633717
+Epoch 94/300 | Train MSE: 0.550440 | Val MSE: 0.445512 | Val MAE: 0.507765 | Val RMSE: 0.632872
+Epoch 95/300 | Train MSE: 0.547558 | Val MSE: 0.446058 | Val MAE: 0.505448 | Val RMSE: 0.631764
+Epoch 96/300 | Train MSE: 0.549022 | Val MSE: 0.449793 | Val MAE: 0.509491 | Val RMSE: 0.635282
+Epoch 97/300 | Train MSE: 0.547092 | Val MSE: 0.446776 | Val MAE: 0.507979 | Val RMSE: 0.633532
+Epoch 98/300 | Train MSE: 0.547747 | Val MSE: 0.453962 | Val MAE: 0.514127 | Val RMSE: 0.639732
+Epoch 99/300 | Train MSE: 0.544325 | Val MSE: 0.447529 | Val MAE: 0.504368 | Val RMSE: 0.633079
+Epoch 100/300 | Train MSE: 0.542969 | Val MSE: 0.448343 | Val MAE: 0.506992 | Val RMSE: 0.634710
+Epoch 101/300 | Train MSE: 0.543284 | Val MSE: 0.447496 | Val MAE: 0.504168 | Val RMSE: 0.632350
+Epoch 102/300 | Train MSE: 0.541136 | Val MSE: 0.442038 | Val MAE: 0.508558 | Val RMSE: 0.631702
+Epoch 103/300 | Train MSE: 0.541361 | Val MSE: 0.453765 | Val MAE: 0.513535 | Val RMSE: 0.638547
+Epoch 104/300 | Train MSE: 0.540716 | Val MSE: 0.445076 | Val MAE: 0.504131 | Val RMSE: 0.631965
+Epoch 105/300 | Train MSE: 0.539926 | Val MSE: 0.452860 | Val MAE: 0.505999 | Val RMSE: 0.635619
+Epoch 106/300 | Train MSE: 0.537439 | Val MSE: 0.454862 | Val MAE: 0.506299 | Val RMSE: 0.635434
+Epoch 107/300 | Train MSE: 0.537946 | Val MSE: 0.452152 | Val MAE: 0.506826 | Val RMSE: 0.635386
+Epoch 108/300 | Train MSE: 0.535582 | Val MSE: 0.447839 | Val MAE: 0.505713 | Val RMSE: 0.634661
+Epoch 109/300 | Train MSE: 0.535039 | Val MSE: 0.450223 | Val MAE: 0.510065 | Val RMSE: 0.636179
+Epoch 110/300 | Train MSE: 0.532462 | Val MSE: 0.450599 | Val MAE: 0.508141 | Val RMSE: 0.635216
+Epoch 111/300 | Train MSE: 0.532388 | Val MSE: 0.447432 | Val MAE: 0.508862 | Val RMSE: 0.635586
+Epoch 112/300 | Train MSE: 0.529716 | Val MSE: 0.448427 | Val MAE: 0.506054 | Val RMSE: 0.633545
+Epoch 113/300 | Train MSE: 0.530202 | Val MSE: 0.448924 | Val MAE: 0.506765 | Val RMSE: 0.634843
+Epoch 114/300 | Train MSE: 0.527995 | Val MSE: 0.445544 | Val MAE: 0.504078 | Val RMSE: 0.631696
+Epoch 115/300 | Train MSE: 0.528795 | Val MSE: 0.453148 | Val MAE: 0.509778 | Val RMSE: 0.637383
+Epoch 116/300 | Train MSE: 0.527851 | Val MSE: 0.442226 | Val MAE: 0.502387 | Val RMSE: 0.629635
+Epoch 117/300 | Train MSE: 0.526681 | Val MSE: 0.444717 | Val MAE: 0.506296 | Val RMSE: 0.631436
+Epoch 118/300 | Train MSE: 0.523851 | Val MSE: 0.448995 | Val MAE: 0.505203 | Val RMSE: 0.632920
+Epoch 119/300 | Train MSE: 0.524644 | Val MSE: 0.443529 | Val MAE: 0.503107 | Val RMSE: 0.630438
+Epoch 120/300 | Train MSE: 0.525270 | Val MSE: 0.447392 | Val MAE: 0.504912 | Val RMSE: 0.632543
+Epoch 121/300 | Train MSE: 0.520996 | Val MSE: 0.451500 | Val MAE: 0.507116 | Val RMSE: 0.636084
+Epoch 122/300 | Train MSE: 0.523483 | Val MSE: 0.452120 | Val MAE: 0.506421 | Val RMSE: 0.635300
+Epoch 123/300 | Train MSE: 0.522637 | Val MSE: 0.456848 | Val MAE: 0.509533 | Val RMSE: 0.638653
+Epoch 124/300 | Train MSE: 0.522155 | Val MSE: 0.448114 | Val MAE: 0.504800 | Val RMSE: 0.632987
+Epoch 125/300 | Train MSE: 0.521989 | Val MSE: 0.450587 | Val MAE: 0.505221 | Val RMSE: 0.634943
+Epoch 126/300 | Train MSE: 0.518991 | Val MSE: 0.447706 | Val MAE: 0.504555 | Val RMSE: 0.633760
+Epoch 127/300 | Train MSE: 0.518560 | Val MSE: 0.439730 | Val MAE: 0.502473 | Val RMSE: 0.629077
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 128/300 | Train MSE: 0.517127 | Val MSE: 0.445918 | Val MAE: 0.504322 | Val RMSE: 0.632146
+Epoch 129/300 | Train MSE: 0.516943 | Val MSE: 0.446945 | Val MAE: 0.507925 | Val RMSE: 0.634749
+Epoch 130/300 | Train MSE: 0.517205 | Val MSE: 0.451711 | Val MAE: 0.506225 | Val RMSE: 0.635629
+Epoch 131/300 | Train MSE: 0.514555 | Val MSE: 0.449261 | Val MAE: 0.505093 | Val RMSE: 0.633936
+Epoch 132/300 | Train MSE: 0.515447 | Val MSE: 0.446908 | Val MAE: 0.503955 | Val RMSE: 0.632702
+Epoch 133/300 | Train MSE: 0.514657 | Val MSE: 0.446631 | Val MAE: 0.504452 | Val RMSE: 0.632425
+Epoch 134/300 | Train MSE: 0.511693 | Val MSE: 0.448584 | Val MAE: 0.506642 | Val RMSE: 0.633974
+Epoch 135/300 | Train MSE: 0.510135 | Val MSE: 0.441898 | Val MAE: 0.503926 | Val RMSE: 0.629975
+Epoch 136/300 | Train MSE: 0.512141 | Val MSE: 0.444531 | Val MAE: 0.506225 | Val RMSE: 0.632616
+Epoch 137/300 | Train MSE: 0.509872 | Val MSE: 0.449750 | Val MAE: 0.509063 | Val RMSE: 0.636042
+Epoch 138/300 | Train MSE: 0.509570 | Val MSE: 0.445984 | Val MAE: 0.505036 | Val RMSE: 0.631465
+Epoch 139/300 | Train MSE: 0.507601 | Val MSE: 0.446769 | Val MAE: 0.506755 | Val RMSE: 0.633011
+Epoch 140/300 | Train MSE: 0.506297 | Val MSE: 0.445099 | Val MAE: 0.504962 | Val RMSE: 0.631955
+Epoch 141/300 | Train MSE: 0.508831 | Val MSE: 0.444726 | Val MAE: 0.503253 | Val RMSE: 0.630401
+Epoch 142/300 | Train MSE: 0.505514 | Val MSE: 0.450195 | Val MAE: 0.505286 | Val RMSE: 0.634194
+Epoch 143/300 | Train MSE: 0.506274 | Val MSE: 0.445024 | Val MAE: 0.504241 | Val RMSE: 0.632204
+Epoch 144/300 | Train MSE: 0.507537 | Val MSE: 0.455661 | Val MAE: 0.509714 | Val RMSE: 0.639235
+Epoch 145/300 | Train MSE: 0.505961 | Val MSE: 0.448611 | Val MAE: 0.506112 | Val RMSE: 0.633407
+Epoch 146/300 | Train MSE: 0.503929 | Val MSE: 0.446087 | Val MAE: 0.507289 | Val RMSE: 0.634548
+Epoch 147/300 | Train MSE: 0.505538 | Val MSE: 0.440030 | Val MAE: 0.500759 | Val RMSE: 0.627732
+Epoch 148/300 | Train MSE: 0.501595 | Val MSE: 0.451004 | Val MAE: 0.506569 | Val RMSE: 0.634850
+Epoch 149/300 | Train MSE: 0.502376 | Val MSE: 0.439606 | Val MAE: 0.502928 | Val RMSE: 0.628922
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 150/300 | Train MSE: 0.501424 | Val MSE: 0.444253 | Val MAE: 0.504578 | Val RMSE: 0.631705
+Epoch 151/300 | Train MSE: 0.502533 | Val MSE: 0.451566 | Val MAE: 0.507688 | Val RMSE: 0.635805
+Epoch 152/300 | Train MSE: 0.498927 | Val MSE: 0.449509 | Val MAE: 0.505924 | Val RMSE: 0.634430
+Epoch 153/300 | Train MSE: 0.500586 | Val MSE: 0.447871 | Val MAE: 0.506386 | Val RMSE: 0.634036
+Epoch 154/300 | Train MSE: 0.499580 | Val MSE: 0.443844 | Val MAE: 0.504607 | Val RMSE: 0.631378
+Epoch 155/300 | Train MSE: 0.496753 | Val MSE: 0.448766 | Val MAE: 0.506089 | Val RMSE: 0.634314
+Epoch 156/300 | Train MSE: 0.498309 | Val MSE: 0.454489 | Val MAE: 0.505647 | Val RMSE: 0.635977
+Epoch 157/300 | Train MSE: 0.495924 | Val MSE: 0.445800 | Val MAE: 0.504427 | Val RMSE: 0.632521
+Epoch 158/300 | Train MSE: 0.495915 | Val MSE: 0.443652 | Val MAE: 0.503636 | Val RMSE: 0.630962
+Epoch 159/300 | Train MSE: 0.495891 | Val MSE: 0.446649 | Val MAE: 0.503897 | Val RMSE: 0.632187
+Epoch 160/300 | Train MSE: 0.495379 | Val MSE: 0.444528 | Val MAE: 0.503259 | Val RMSE: 0.631310
+Epoch 161/300 | Train MSE: 0.494577 | Val MSE: 0.446132 | Val MAE: 0.505832 | Val RMSE: 0.633274
+Epoch 162/300 | Train MSE: 0.492706 | Val MSE: 0.447732 | Val MAE: 0.506098 | Val RMSE: 0.634141
+Epoch 163/300 | Train MSE: 0.493193 | Val MSE: 0.447058 | Val MAE: 0.505928 | Val RMSE: 0.632565
+Epoch 164/300 | Train MSE: 0.491625 | Val MSE: 0.451201 | Val MAE: 0.506781 | Val RMSE: 0.635866
+Epoch 165/300 | Train MSE: 0.493865 | Val MSE: 0.445721 | Val MAE: 0.504462 | Val RMSE: 0.631896
+Epoch 166/300 | Train MSE: 0.490662 | Val MSE: 0.440268 | Val MAE: 0.501960 | Val RMSE: 0.628910
+Epoch 167/300 | Train MSE: 0.492619 | Val MSE: 0.439894 | Val MAE: 0.500809 | Val RMSE: 0.627894
+Epoch 168/300 | Train MSE: 0.491624 | Val MSE: 0.445193 | Val MAE: 0.503706 | Val RMSE: 0.631839
+Epoch 169/300 | Train MSE: 0.491419 | Val MSE: 0.445175 | Val MAE: 0.503169 | Val RMSE: 0.631705
+Epoch 170/300 | Train MSE: 0.490791 | Val MSE: 0.442758 | Val MAE: 0.504985 | Val RMSE: 0.631504
+Epoch 171/300 | Train MSE: 0.489575 | Val MSE: 0.446715 | Val MAE: 0.505734 | Val RMSE: 0.633430
+Epoch 172/300 | Train MSE: 0.488878 | Val MSE: 0.452139 | Val MAE: 0.505716 | Val RMSE: 0.634897
+Epoch 173/300 | Train MSE: 0.488808 | Val MSE: 0.445031 | Val MAE: 0.504512 | Val RMSE: 0.631006
+Epoch 174/300 | Train MSE: 0.486602 | Val MSE: 0.444953 | Val MAE: 0.504384 | Val RMSE: 0.631678
+Epoch 175/300 | Train MSE: 0.487511 | Val MSE: 0.441395 | Val MAE: 0.504036 | Val RMSE: 0.631033
+Epoch 176/300 | Train MSE: 0.486133 | Val MSE: 0.444870 | Val MAE: 0.505544 | Val RMSE: 0.631662
+Epoch 177/300 | Train MSE: 0.486006 | Val MSE: 0.450484 | Val MAE: 0.506624 | Val RMSE: 0.635049
+Epoch 178/300 | Train MSE: 0.488143 | Val MSE: 0.445083 | Val MAE: 0.505422 | Val RMSE: 0.632638
+Epoch 179/300 | Train MSE: 0.486397 | Val MSE: 0.442188 | Val MAE: 0.503234 | Val RMSE: 0.630347
+Epoch 180/300 | Train MSE: 0.484203 | Val MSE: 0.445663 | Val MAE: 0.505069 | Val RMSE: 0.632469
+Epoch 181/300 | Train MSE: 0.483930 | Val MSE: 0.447595 | Val MAE: 0.504751 | Val RMSE: 0.633096
+Epoch 182/300 | Train MSE: 0.484552 | Val MSE: 0.446163 | Val MAE: 0.503818 | Val RMSE: 0.631679
+Epoch 183/300 | Train MSE: 0.483338 | Val MSE: 0.448199 | Val MAE: 0.506583 | Val RMSE: 0.633701
+Epoch 184/300 | Train MSE: 0.484273 | Val MSE: 0.444281 | Val MAE: 0.504416 | Val RMSE: 0.631347
+Epoch 185/300 | Train MSE: 0.482751 | Val MSE: 0.448798 | Val MAE: 0.505786 | Val RMSE: 0.634228
+Epoch 186/300 | Train MSE: 0.483014 | Val MSE: 0.446058 | Val MAE: 0.506392 | Val RMSE: 0.632869
+Epoch 187/300 | Train MSE: 0.482475 | Val MSE: 0.447673 | Val MAE: 0.504969 | Val RMSE: 0.632786
+Epoch 188/300 | Train MSE: 0.481083 | Val MSE: 0.443215 | Val MAE: 0.503851 | Val RMSE: 0.631497
+Epoch 189/300 | Train MSE: 0.480117 | Val MSE: 0.445251 | Val MAE: 0.505722 | Val RMSE: 0.633316
+Epoch 190/300 | Train MSE: 0.479638 | Val MSE: 0.445431 | Val MAE: 0.505217 | Val RMSE: 0.632537
+Epoch 191/300 | Train MSE: 0.480076 | Val MSE: 0.448199 | Val MAE: 0.505682 | Val RMSE: 0.633666
+Epoch 192/300 | Train MSE: 0.481835 | Val MSE: 0.441379 | Val MAE: 0.501403 | Val RMSE: 0.628425
+Epoch 193/300 | Train MSE: 0.479431 | Val MSE: 0.447755 | Val MAE: 0.505901 | Val RMSE: 0.633717
+Epoch 194/300 | Train MSE: 0.479640 | Val MSE: 0.436147 | Val MAE: 0.500591 | Val RMSE: 0.626134
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 195/300 | Train MSE: 0.477847 | Val MSE: 0.442077 | Val MAE: 0.503527 | Val RMSE: 0.629916
+Epoch 196/300 | Train MSE: 0.478943 | Val MSE: 0.440175 | Val MAE: 0.502503 | Val RMSE: 0.628566
+Epoch 197/300 | Train MSE: 0.475575 | Val MSE: 0.440213 | Val MAE: 0.501338 | Val RMSE: 0.628402
+Epoch 198/300 | Train MSE: 0.477644 | Val MSE: 0.443187 | Val MAE: 0.501916 | Val RMSE: 0.630082
+Epoch 199/300 | Train MSE: 0.476167 | Val MSE: 0.445295 | Val MAE: 0.506959 | Val RMSE: 0.632476
+Epoch 200/300 | Train MSE: 0.475891 | Val MSE: 0.442417 | Val MAE: 0.503249 | Val RMSE: 0.630413
+Epoch 201/300 | Train MSE: 0.475999 | Val MSE: 0.445048 | Val MAE: 0.503490 | Val RMSE: 0.631056
+Epoch 202/300 | Train MSE: 0.475414 | Val MSE: 0.440264 | Val MAE: 0.502050 | Val RMSE: 0.628633
+Epoch 203/300 | Train MSE: 0.475580 | Val MSE: 0.445020 | Val MAE: 0.503466 | Val RMSE: 0.631416
+Epoch 204/300 | Train MSE: 0.473186 | Val MSE: 0.441607 | Val MAE: 0.504234 | Val RMSE: 0.629929
+Epoch 205/300 | Train MSE: 0.474354 | Val MSE: 0.444447 | Val MAE: 0.503417 | Val RMSE: 0.630390
+Epoch 206/300 | Train MSE: 0.473040 | Val MSE: 0.444154 | Val MAE: 0.502752 | Val RMSE: 0.630555
+Epoch 207/300 | Train MSE: 0.472698 | Val MSE: 0.442781 | Val MAE: 0.502416 | Val RMSE: 0.630252
+Epoch 208/300 | Train MSE: 0.471621 | Val MSE: 0.444331 | Val MAE: 0.503694 | Val RMSE: 0.630409
+Epoch 209/300 | Train MSE: 0.470564 | Val MSE: 0.445017 | Val MAE: 0.505641 | Val RMSE: 0.631918
+Epoch 210/300 | Train MSE: 0.473939 | Val MSE: 0.440265 | Val MAE: 0.504164 | Val RMSE: 0.629472
+Epoch 211/300 | Train MSE: 0.472737 | Val MSE: 0.442136 | Val MAE: 0.503477 | Val RMSE: 0.630441
+Epoch 212/300 | Train MSE: 0.471305 | Val MSE: 0.445411 | Val MAE: 0.505182 | Val RMSE: 0.632967
+Epoch 213/300 | Train MSE: 0.471027 | Val MSE: 0.443062 | Val MAE: 0.502493 | Val RMSE: 0.629677
+Epoch 214/300 | Train MSE: 0.470803 | Val MSE: 0.442642 | Val MAE: 0.503884 | Val RMSE: 0.630087
+Epoch 215/300 | Train MSE: 0.468454 | Val MSE: 0.445805 | Val MAE: 0.504370 | Val RMSE: 0.631582
+Epoch 216/300 | Train MSE: 0.469734 | Val MSE: 0.441273 | Val MAE: 0.504434 | Val RMSE: 0.629863
+Epoch 217/300 | Train MSE: 0.468487 | Val MSE: 0.452907 | Val MAE: 0.508386 | Val RMSE: 0.636923
+Epoch 218/300 | Train MSE: 0.469825 | Val MSE: 0.440415 | Val MAE: 0.503425 | Val RMSE: 0.629288
+Epoch 219/300 | Train MSE: 0.469600 | Val MSE: 0.443505 | Val MAE: 0.503819 | Val RMSE: 0.631265
+Epoch 220/300 | Train MSE: 0.468323 | Val MSE: 0.447258 | Val MAE: 0.506594 | Val RMSE: 0.633335
+Epoch 221/300 | Train MSE: 0.467577 | Val MSE: 0.439718 | Val MAE: 0.503444 | Val RMSE: 0.628919
+Epoch 222/300 | Train MSE: 0.466803 | Val MSE: 0.447352 | Val MAE: 0.505735 | Val RMSE: 0.633338
+Epoch 223/300 | Train MSE: 0.467959 | Val MSE: 0.441576 | Val MAE: 0.501022 | Val RMSE: 0.628076
+Epoch 224/300 | Train MSE: 0.468030 | Val MSE: 0.437762 | Val MAE: 0.500504 | Val RMSE: 0.626668
+Epoch 225/300 | Train MSE: 0.466395 | Val MSE: 0.444908 | Val MAE: 0.503960 | Val RMSE: 0.631381
+Epoch 226/300 | Train MSE: 0.467094 | Val MSE: 0.440561 | Val MAE: 0.501285 | Val RMSE: 0.628444
+Epoch 227/300 | Train MSE: 0.467433 | Val MSE: 0.441942 | Val MAE: 0.503252 | Val RMSE: 0.630056
+Epoch 228/300 | Train MSE: 0.467944 | Val MSE: 0.439743 | Val MAE: 0.501782 | Val RMSE: 0.627559
+Epoch 229/300 | Train MSE: 0.466452 | Val MSE: 0.437914 | Val MAE: 0.503687 | Val RMSE: 0.628005
+Epoch 230/300 | Train MSE: 0.468013 | Val MSE: 0.442575 | Val MAE: 0.503249 | Val RMSE: 0.629497
+Epoch 231/300 | Train MSE: 0.463416 | Val MSE: 0.440908 | Val MAE: 0.502021 | Val RMSE: 0.628890
+Epoch 232/300 | Train MSE: 0.464731 | Val MSE: 0.440118 | Val MAE: 0.503735 | Val RMSE: 0.629640
+Epoch 233/300 | Train MSE: 0.464946 | Val MSE: 0.438733 | Val MAE: 0.501432 | Val RMSE: 0.627807
+Epoch 234/300 | Train MSE: 0.465627 | Val MSE: 0.443318 | Val MAE: 0.504755 | Val RMSE: 0.631225
+Epoch 235/300 | Train MSE: 0.464452 | Val MSE: 0.442143 | Val MAE: 0.502021 | Val RMSE: 0.628916
+Epoch 236/300 | Train MSE: 0.465950 | Val MSE: 0.436759 | Val MAE: 0.500334 | Val RMSE: 0.626373
+Epoch 237/300 | Train MSE: 0.463256 | Val MSE: 0.439615 | Val MAE: 0.500164 | Val RMSE: 0.626265
+Epoch 238/300 | Train MSE: 0.464495 | Val MSE: 0.443187 | Val MAE: 0.502260 | Val RMSE: 0.629964
+Epoch 239/300 | Train MSE: 0.461295 | Val MSE: 0.442948 | Val MAE: 0.502666 | Val RMSE: 0.629273
+Epoch 240/300 | Train MSE: 0.462002 | Val MSE: 0.442879 | Val MAE: 0.502805 | Val RMSE: 0.629345
+Epoch 241/300 | Train MSE: 0.462345 | Val MSE: 0.447182 | Val MAE: 0.504671 | Val RMSE: 0.632010
+Epoch 242/300 | Train MSE: 0.463697 | Val MSE: 0.442907 | Val MAE: 0.502840 | Val RMSE: 0.629563
+Epoch 243/300 | Train MSE: 0.461202 | Val MSE: 0.443178 | Val MAE: 0.502733 | Val RMSE: 0.629432
+Epoch 244/300 | Train MSE: 0.460786 | Val MSE: 0.439717 | Val MAE: 0.500130 | Val RMSE: 0.627382
+Epoch 245/300 | Train MSE: 0.460262 | Val MSE: 0.440171 | Val MAE: 0.501108 | Val RMSE: 0.627353
+Epoch 246/300 | Train MSE: 0.459537 | Val MSE: 0.443511 | Val MAE: 0.502648 | Val RMSE: 0.630392
+Epoch 247/300 | Train MSE: 0.458789 | Val MSE: 0.440522 | Val MAE: 0.503364 | Val RMSE: 0.629326
+Epoch 248/300 | Train MSE: 0.460517 | Val MSE: 0.437694 | Val MAE: 0.501266 | Val RMSE: 0.627239
+Epoch 249/300 | Train MSE: 0.457215 | Val MSE: 0.439486 | Val MAE: 0.501858 | Val RMSE: 0.628305
+Epoch 250/300 | Train MSE: 0.459246 | Val MSE: 0.441021 | Val MAE: 0.503165 | Val RMSE: 0.629149
+Epoch 251/300 | Train MSE: 0.459280 | Val MSE: 0.440340 | Val MAE: 0.500342 | Val RMSE: 0.627498
+Epoch 252/300 | Train MSE: 0.457616 | Val MSE: 0.443932 | Val MAE: 0.504008 | Val RMSE: 0.631144
+Epoch 253/300 | Train MSE: 0.459013 | Val MSE: 0.442907 | Val MAE: 0.502138 | Val RMSE: 0.629416
+Epoch 254/300 | Train MSE: 0.457111 | Val MSE: 0.438684 | Val MAE: 0.502218 | Val RMSE: 0.627846
+Epoch 255/300 | Train MSE: 0.459121 | Val MSE: 0.445215 | Val MAE: 0.504753 | Val RMSE: 0.631864
+Epoch 256/300 | Train MSE: 0.458561 | Val MSE: 0.438707 | Val MAE: 0.501202 | Val RMSE: 0.627841
+Epoch 257/300 | Train MSE: 0.459473 | Val MSE: 0.443542 | Val MAE: 0.501649 | Val RMSE: 0.629260
+Epoch 258/300 | Train MSE: 0.457725 | Val MSE: 0.435264 | Val MAE: 0.500883 | Val RMSE: 0.626358
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 259/300 | Train MSE: 0.460735 | Val MSE: 0.440654 | Val MAE: 0.501812 | Val RMSE: 0.628958
+Epoch 260/300 | Train MSE: 0.458004 | Val MSE: 0.445100 | Val MAE: 0.504608 | Val RMSE: 0.631092
+Epoch 261/300 | Train MSE: 0.458288 | Val MSE: 0.441474 | Val MAE: 0.502273 | Val RMSE: 0.628421
+Epoch 262/300 | Train MSE: 0.454711 | Val MSE: 0.438690 | Val MAE: 0.501760 | Val RMSE: 0.626880
+Epoch 263/300 | Train MSE: 0.455166 | Val MSE: 0.437405 | Val MAE: 0.499717 | Val RMSE: 0.626179
+Epoch 264/300 | Train MSE: 0.455334 | Val MSE: 0.438303 | Val MAE: 0.500617 | Val RMSE: 0.626895
+Epoch 265/300 | Train MSE: 0.453553 | Val MSE: 0.437142 | Val MAE: 0.500166 | Val RMSE: 0.626767
+Epoch 266/300 | Train MSE: 0.455101 | Val MSE: 0.439794 | Val MAE: 0.502282 | Val RMSE: 0.628371
+Epoch 267/300 | Train MSE: 0.452896 | Val MSE: 0.436131 | Val MAE: 0.500026 | Val RMSE: 0.624922
+Epoch 268/300 | Train MSE: 0.453590 | Val MSE: 0.437312 | Val MAE: 0.500155 | Val RMSE: 0.626054
+Epoch 269/300 | Train MSE: 0.453143 | Val MSE: 0.438405 | Val MAE: 0.501682 | Val RMSE: 0.627697
+Epoch 270/300 | Train MSE: 0.453240 | Val MSE: 0.440830 | Val MAE: 0.501448 | Val RMSE: 0.628362
+Epoch 271/300 | Train MSE: 0.453671 | Val MSE: 0.440776 | Val MAE: 0.502997 | Val RMSE: 0.629733
+Epoch 272/300 | Train MSE: 0.453148 | Val MSE: 0.437062 | Val MAE: 0.499808 | Val RMSE: 0.626432
+Epoch 273/300 | Train MSE: 0.452329 | Val MSE: 0.444363 | Val MAE: 0.504569 | Val RMSE: 0.631411
+Epoch 274/300 | Train MSE: 0.453912 | Val MSE: 0.437837 | Val MAE: 0.501431 | Val RMSE: 0.627221
+Epoch 275/300 | Train MSE: 0.451942 | Val MSE: 0.441178 | Val MAE: 0.502806 | Val RMSE: 0.628975
+Epoch 276/300 | Train MSE: 0.453329 | Val MSE: 0.440225 | Val MAE: 0.503126 | Val RMSE: 0.628812
+Epoch 277/300 | Train MSE: 0.451371 | Val MSE: 0.437242 | Val MAE: 0.501653 | Val RMSE: 0.626589
+Epoch 278/300 | Train MSE: 0.452665 | Val MSE: 0.440552 | Val MAE: 0.503470 | Val RMSE: 0.629055
+Epoch 279/300 | Train MSE: 0.449873 | Val MSE: 0.435205 | Val MAE: 0.499260 | Val RMSE: 0.624922
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 280/300 | Train MSE: 0.452335 | Val MSE: 0.437395 | Val MAE: 0.500841 | Val RMSE: 0.627277
+Epoch 281/300 | Train MSE: 0.451018 | Val MSE: 0.440892 | Val MAE: 0.501628 | Val RMSE: 0.627630
+Epoch 282/300 | Train MSE: 0.454085 | Val MSE: 0.440330 | Val MAE: 0.501947 | Val RMSE: 0.628586
+Epoch 283/300 | Train MSE: 0.450606 | Val MSE: 0.434861 | Val MAE: 0.499348 | Val RMSE: 0.624733
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 284/300 | Train MSE: 0.450692 | Val MSE: 0.437685 | Val MAE: 0.501602 | Val RMSE: 0.626926
+Epoch 285/300 | Train MSE: 0.450099 | Val MSE: 0.445083 | Val MAE: 0.504391 | Val RMSE: 0.631647
+Epoch 286/300 | Train MSE: 0.449532 | Val MSE: 0.442501 | Val MAE: 0.504017 | Val RMSE: 0.630281
+Epoch 287/300 | Train MSE: 0.450586 | Val MSE: 0.434816 | Val MAE: 0.500221 | Val RMSE: 0.626154
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 288/300 | Train MSE: 0.450742 | Val MSE: 0.439055 | Val MAE: 0.502768 | Val RMSE: 0.628661
+Epoch 289/300 | Train MSE: 0.447242 | Val MSE: 0.436580 | Val MAE: 0.500695 | Val RMSE: 0.626141
+Epoch 290/300 | Train MSE: 0.450041 | Val MSE: 0.433672 | Val MAE: 0.498343 | Val RMSE: 0.624170
+   (Validation MSE improved. Saving model to best_cnn_simple_model.pth)
+Epoch 291/300 | Train MSE: 0.448010 | Val MSE: 0.440842 | Val MAE: 0.502484 | Val RMSE: 0.629373
+Epoch 292/300 | Train MSE: 0.449528 | Val MSE: 0.437133 | Val MAE: 0.500751 | Val RMSE: 0.626674
+Epoch 293/300 | Train MSE: 0.447907 | Val MSE: 0.437661 | Val MAE: 0.500470 | Val RMSE: 0.626902
+Epoch 294/300 | Train MSE: 0.447703 | Val MSE: 0.440180 | Val MAE: 0.503900 | Val RMSE: 0.629806
+Epoch 295/300 | Train MSE: 0.448322 | Val MSE: 0.437579 | Val MAE: 0.501818 | Val RMSE: 0.627785
+Epoch 296/300 | Train MSE: 0.448722 | Val MSE: 0.435882 | Val MAE: 0.499629 | Val RMSE: 0.625344
+Epoch 297/300 | Train MSE: 0.449371 | Val MSE: 0.438877 | Val MAE: 0.502100 | Val RMSE: 0.628322
+Epoch 298/300 | Train MSE: 0.446630 | Val MSE: 0.437533 | Val MAE: 0.501415 | Val RMSE: 0.627438
+Epoch 299/300 | Train MSE: 0.447918 | Val MSE: 0.438601 | Val MAE: 0.501912 | Val RMSE: 0.628395
+Epoch 300/300 | Train MSE: 0.447629 | Val MSE: 0.439147 | Val MAE: 0.502433 | Val RMSE: 0.628555
 Training finished.
 Generating predictions for the anomaly period...
 Prediction generation complete.
@@ -112,8 +389,8 @@ Saved 'no2_cnn_simple_anomaly_plot.png' and 'no2_cnn_simple_anomaly_plot.svg'
 Saved 'no2_cnn_simple_residual_plot.png' and 'no2_cnn_simple_residual_plot.svg'
 
 --- Anomaly Analysis Results (NO2) ---
-Average Residual (Period 1): -10.0345
-Average Residual (Period 2): -3.2432
+Average Residual (Period 1): -8.9422
+Average Residual (Period 2): -3.6524
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for PM10...
@@ -121,8 +398,8 @@ Saved 'pm10_cnn_simple_anomaly_plot.png' and 'pm10_cnn_simple_anomaly_plot.svg'
 Saved 'pm10_cnn_simple_residual_plot.png' and 'pm10_cnn_simple_residual_plot.svg'
 
 --- Anomaly Analysis Results (PM10) ---
-Average Residual (Period 1): -11.0381
-Average Residual (Period 2): -7.2115
+Average Residual (Period 1): -12.5772
+Average Residual (Period 2): -5.7866
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for CO...
@@ -130,10 +407,19 @@ Saved 'co_cnn_simple_anomaly_plot.png' and 'co_cnn_simple_anomaly_plot.svg'
 Saved 'co_cnn_simple_residual_plot.png' and 'co_cnn_simple_residual_plot.svg'
 
 --- Anomaly Analysis Results (CO) ---
-Average Residual (Period 1): -0.0486
-Average Residual (Period 2): -0.0676
+Average Residual (Period 1): -0.1435
+Average Residual (Period 2): -0.0896
 (A negative residual means actual pollution was LOWER than predicted)
 
+Generating predictions for the full train/val fit...
+Full fit prediction generation complete.
+Generating train/val fit plots for each pollutant...
+  -> Plotting fit for NO2...
+Saved 'no2_cnn_simple_train_fit_plot.png' and 'no2_cnn_simple_train_fit_plot.svg'
+  -> Plotting fit for PM10...
+Saved 'pm10_cnn_simple_train_fit_plot.png' and 'pm10_cnn_simple_train_fit_plot.svg'
+  -> Plotting fit for CO...
+Saved 'co_cnn_simple_train_fit_plot.png' and 'co_cnn_simple_train_fit_plot.svg'
 
 --- Analysis Complete ---
 
@@ -141,11 +427,11 @@ Average Residual (Period 2): -0.0676
 ================================================================================
 
 --- INICIO DEL REGISTRO: CNN_RESNET ---
-Configuración: {'model': 'CNN_RESNET', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.2, 'cnn_resnet_channels': 64, 'cnn_kernel_size': 3, 'cnn_resnet_blocks': 3}
+Configuración: {'model': 'CNN_RESNET', 'validation_strategy': 'simple', 'plot_fit': True, 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.2, 'cnn_resnet_channels': 64, 'cnn_kernel_size': 3, 'cnn_resnet_blocks': 3, 'train_split_days': 240, 'val_split_days': 60}
 
 --- Using device: cuda ---
 --- Selected Model: CNN_RESNET ---
---- Full Config: Namespace(model='CNN_RESNET', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.2, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+--- Full Config: Namespace(model='CNN_RESNET', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, validation_strategy='simple', train_split_days=240, val_split_days=60, validation_split_ratio=0.2, plot_fit=True, dropout=0.2, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
 Loading data from weather-air-quality-clean.csv.bz2...
 Data loaded and date index set.
 Starting preprocessing and feature engineering...
@@ -172,47 +458,76 @@ Final features list (6): ['temperature_combined', 'relativehumidity_combined', '
 Interpolating missing values (method='time') for all 13 target/feature columns...
 Dropping any remaining NaN rows (e.g., from start of series)...
 Preprocessing complete. Final dataset shape: (129635, 41)
-Splitting data into train/val (around gap) and anomaly (gap)...
-Training data:   102709 rows (from 2 chunks)
-Validation data: 25678 rows (from 2 chunks)
-Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
-Data scaling complete.
-Creating training and validation sequences...
+Splitting data with SIMPLE validation strategy (80/20 split per-block)...
+Created 2 training chunks and 2 validation chunks.
+Scalers fitted on all training chunks.
 Total training sequences: 102565
 Total validation sequences: 25534
 
 --- Initializing model of type: CNN_RESNET ---
 Starting model training...
-Epoch 01/50 | Train MSE: 0.873345 | Val MSE: 0.781000 | Val MAE: 0.475796 | Val RMSE: 0.626091
+Epoch 01/50 | Train MSE: 0.817363 | Val MSE: 0.539971 | Val MAE: 0.573379 | Val RMSE: 0.701592
    (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
-Epoch 02/50 | Train MSE: 0.783291 | Val MSE: 0.824019 | Val MAE: 0.484266 | Val RMSE: 0.645628
-Epoch 03/50 | Train MSE: 0.709380 | Val MSE: 0.777969 | Val MAE: 0.467717 | Val RMSE: 0.617239
+Epoch 02/50 | Train MSE: 0.705805 | Val MSE: 0.509429 | Val MAE: 0.555822 | Val RMSE: 0.680489
    (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
-Epoch 04/50 | Train MSE: 0.658233 | Val MSE: 0.814256 | Val MAE: 0.478060 | Val RMSE: 0.635319
-Epoch 05/50 | Train MSE: 0.622326 | Val MSE: 0.779120 | Val MAE: 0.468478 | Val RMSE: 0.617300
-Epoch 06/50 | Train MSE: 0.595716 | Val MSE: 0.822374 | Val MAE: 0.473954 | Val RMSE: 0.627482
-Epoch 07/50 | Train MSE: 0.583277 | Val MSE: 0.843497 | Val MAE: 0.475018 | Val RMSE: 0.635603
-Epoch 08/50 | Train MSE: 0.561007 | Val MSE: 0.787156 | Val MAE: 0.461053 | Val RMSE: 0.617698
-Epoch 09/50 | Train MSE: 0.547689 | Val MSE: 0.776367 | Val MAE: 0.450900 | Val RMSE: 0.606409
+Epoch 03/50 | Train MSE: 0.627654 | Val MSE: 0.473809 | Val MAE: 0.526565 | Val RMSE: 0.652981
    (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
-Epoch 10/50 | Train MSE: 0.538867 | Val MSE: 0.744466 | Val MAE: 0.440938 | Val RMSE: 0.592138
+Epoch 04/50 | Train MSE: 0.580339 | Val MSE: 0.494546 | Val MAE: 0.541289 | Val RMSE: 0.666843
+Epoch 05/50 | Train MSE: 0.546795 | Val MSE: 0.476238 | Val MAE: 0.526925 | Val RMSE: 0.655219
+Epoch 06/50 | Train MSE: 0.523720 | Val MSE: 0.496165 | Val MAE: 0.542736 | Val RMSE: 0.670066
+Epoch 07/50 | Train MSE: 0.503940 | Val MSE: 0.470692 | Val MAE: 0.524139 | Val RMSE: 0.650758
    (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
-Epoch 11/50 | Train MSE: 0.532652 | Val MSE: 0.808028 | Val MAE: 0.461838 | Val RMSE: 0.619405
-Epoch 12/50 | Train MSE: 0.524006 | Val MSE: 0.811773 | Val MAE: 0.465276 | Val RMSE: 0.625208
-Epoch 13/50 | Train MSE: 0.507481 | Val MSE: 0.801970 | Val MAE: 0.464003 | Val RMSE: 0.623207
-Epoch 14/50 | Train MSE: 0.508359 | Val MSE: 0.753765 | Val MAE: 0.442822 | Val RMSE: 0.596345
-Epoch 15/50 | Train MSE: 0.500753 | Val MSE: 0.802608 | Val MAE: 0.452852 | Val RMSE: 0.613970
-Epoch 16/50 | Train MSE: 0.491804 | Val MSE: 0.905217 | Val MAE: 0.485411 | Val RMSE: 0.655462
-Epoch 17/50 | Train MSE: 0.490180 | Val MSE: 0.750020 | Val MAE: 0.441605 | Val RMSE: 0.593880
-Epoch 18/50 | Train MSE: 0.481434 | Val MSE: 0.774330 | Val MAE: 0.454271 | Val RMSE: 0.608089
-Epoch 19/50 | Train MSE: 0.483476 | Val MSE: 0.788830 | Val MAE: 0.459385 | Val RMSE: 0.614558
-Epoch 20/50 | Train MSE: 0.473087 | Val MSE: 0.827757 | Val MAE: 0.461511 | Val RMSE: 0.627077
-Epoch 21/50 | Train MSE: 0.469062 | Val MSE: 0.767983 | Val MAE: 0.448200 | Val RMSE: 0.601598
-Epoch 22/50 | Train MSE: 0.465967 | Val MSE: 0.801391 | Val MAE: 0.449535 | Val RMSE: 0.611600
-Epoch 23/50 | Train MSE: 0.465563 | Val MSE: 0.927005 | Val MAE: 0.476874 | Val RMSE: 0.649901
-Epoch 24/50 | Train MSE: 0.455243 | Val MSE: 0.841335 | Val MAE: 0.463526 | Val RMSE: 0.625032
-Epoch 25/50 | Train MSE: 0.450391 | Val MSE: 0.825823 | Val MAE: 0.463573 | Val RMSE: 0.628440
-Early stopping triggered after 25 epochs.
+Epoch 08/50 | Train MSE: 0.485759 | Val MSE: 0.486426 | Val MAE: 0.534265 | Val RMSE: 0.660780
+Epoch 09/50 | Train MSE: 0.475611 | Val MSE: 0.470252 | Val MAE: 0.523390 | Val RMSE: 0.650096
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 10/50 | Train MSE: 0.461648 | Val MSE: 0.472736 | Val MAE: 0.523767 | Val RMSE: 0.651640
+Epoch 11/50 | Train MSE: 0.452460 | Val MSE: 0.467345 | Val MAE: 0.522352 | Val RMSE: 0.648360
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 12/50 | Train MSE: 0.442882 | Val MSE: 0.465480 | Val MAE: 0.520085 | Val RMSE: 0.646080
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 13/50 | Train MSE: 0.432611 | Val MSE: 0.478956 | Val MAE: 0.530092 | Val RMSE: 0.658843
+Epoch 14/50 | Train MSE: 0.428007 | Val MSE: 0.469037 | Val MAE: 0.522256 | Val RMSE: 0.649285
+Epoch 15/50 | Train MSE: 0.418278 | Val MSE: 0.470774 | Val MAE: 0.524962 | Val RMSE: 0.650982
+Epoch 16/50 | Train MSE: 0.412254 | Val MSE: 0.465828 | Val MAE: 0.523659 | Val RMSE: 0.648198
+Epoch 17/50 | Train MSE: 0.407153 | Val MSE: 0.460350 | Val MAE: 0.523891 | Val RMSE: 0.646388
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 18/50 | Train MSE: 0.402805 | Val MSE: 0.479344 | Val MAE: 0.531061 | Val RMSE: 0.654919
+Epoch 19/50 | Train MSE: 0.397590 | Val MSE: 0.463552 | Val MAE: 0.520835 | Val RMSE: 0.644837
+Epoch 20/50 | Train MSE: 0.393651 | Val MSE: 0.458556 | Val MAE: 0.517270 | Val RMSE: 0.640791
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 21/50 | Train MSE: 0.389169 | Val MSE: 0.484735 | Val MAE: 0.536787 | Val RMSE: 0.660240
+Epoch 22/50 | Train MSE: 0.386938 | Val MSE: 0.483914 | Val MAE: 0.533996 | Val RMSE: 0.660119
+Epoch 23/50 | Train MSE: 0.381731 | Val MSE: 0.455506 | Val MAE: 0.515738 | Val RMSE: 0.639002
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 24/50 | Train MSE: 0.378548 | Val MSE: 0.455355 | Val MAE: 0.517072 | Val RMSE: 0.641003
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 25/50 | Train MSE: 0.373592 | Val MSE: 0.460858 | Val MAE: 0.520280 | Val RMSE: 0.644067
+Epoch 26/50 | Train MSE: 0.372731 | Val MSE: 0.462554 | Val MAE: 0.519569 | Val RMSE: 0.644496
+Epoch 27/50 | Train MSE: 0.369465 | Val MSE: 0.451952 | Val MAE: 0.515806 | Val RMSE: 0.638772
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 28/50 | Train MSE: 0.367355 | Val MSE: 0.452974 | Val MAE: 0.516756 | Val RMSE: 0.639616
+Epoch 29/50 | Train MSE: 0.363397 | Val MSE: 0.449945 | Val MAE: 0.513286 | Val RMSE: 0.634566
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 30/50 | Train MSE: 0.362492 | Val MSE: 0.460011 | Val MAE: 0.519384 | Val RMSE: 0.643973
+Epoch 31/50 | Train MSE: 0.358156 | Val MSE: 0.454508 | Val MAE: 0.514121 | Val RMSE: 0.638749
+Epoch 32/50 | Train MSE: 0.355721 | Val MSE: 0.440675 | Val MAE: 0.509159 | Val RMSE: 0.630665
+   (Validation MSE improved. Saving model to best_cnn_resnet_model.pth)
+Epoch 33/50 | Train MSE: 0.352272 | Val MSE: 0.452723 | Val MAE: 0.514404 | Val RMSE: 0.636931
+Epoch 34/50 | Train MSE: 0.351456 | Val MSE: 0.469040 | Val MAE: 0.524723 | Val RMSE: 0.649240
+Epoch 35/50 | Train MSE: 0.349255 | Val MSE: 0.452967 | Val MAE: 0.516091 | Val RMSE: 0.638379
+Epoch 36/50 | Train MSE: 0.348809 | Val MSE: 0.459259 | Val MAE: 0.517526 | Val RMSE: 0.641618
+Epoch 37/50 | Train MSE: 0.345486 | Val MSE: 0.467534 | Val MAE: 0.521054 | Val RMSE: 0.646954
+Epoch 38/50 | Train MSE: 0.344046 | Val MSE: 0.460474 | Val MAE: 0.517127 | Val RMSE: 0.641901
+Epoch 39/50 | Train MSE: 0.343036 | Val MSE: 0.446464 | Val MAE: 0.510935 | Val RMSE: 0.633886
+Epoch 40/50 | Train MSE: 0.339996 | Val MSE: 0.467323 | Val MAE: 0.522573 | Val RMSE: 0.647354
+Epoch 41/50 | Train MSE: 0.338448 | Val MSE: 0.450093 | Val MAE: 0.512071 | Val RMSE: 0.634990
+Epoch 42/50 | Train MSE: 0.338131 | Val MSE: 0.453882 | Val MAE: 0.513114 | Val RMSE: 0.636221
+Epoch 43/50 | Train MSE: 0.335635 | Val MSE: 0.441179 | Val MAE: 0.507924 | Val RMSE: 0.628895
+Epoch 44/50 | Train MSE: 0.336126 | Val MSE: 0.450975 | Val MAE: 0.510835 | Val RMSE: 0.634607
+Epoch 45/50 | Train MSE: 0.333404 | Val MSE: 0.444003 | Val MAE: 0.507758 | Val RMSE: 0.630629
+Epoch 46/50 | Train MSE: 0.331202 | Val MSE: 0.462553 | Val MAE: 0.518475 | Val RMSE: 0.643056
+Epoch 47/50 | Train MSE: 0.329988 | Val MSE: 0.451691 | Val MAE: 0.513563 | Val RMSE: 0.636298
+Early stopping triggered after 47 epochs.
 Training finished.
 Generating predictions for the anomaly period...
 Prediction generation complete.
@@ -228,8 +543,8 @@ Saved 'no2_cnn_resnet_anomaly_plot.png' and 'no2_cnn_resnet_anomaly_plot.svg'
 Saved 'no2_cnn_resnet_residual_plot.png' and 'no2_cnn_resnet_residual_plot.svg'
 
 --- Anomaly Analysis Results (NO2) ---
-Average Residual (Period 1): -8.2851
-Average Residual (Period 2): -2.7422
+Average Residual (Period 1): -9.4943
+Average Residual (Period 2): -3.6523
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for PM10...
@@ -237,8 +552,8 @@ Saved 'pm10_cnn_resnet_anomaly_plot.png' and 'pm10_cnn_resnet_anomaly_plot.svg'
 Saved 'pm10_cnn_resnet_residual_plot.png' and 'pm10_cnn_resnet_residual_plot.svg'
 
 --- Anomaly Analysis Results (PM10) ---
-Average Residual (Period 1): -13.4389
-Average Residual (Period 2): -7.7883
+Average Residual (Period 1): -15.7851
+Average Residual (Period 2): -9.9334
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for CO...
@@ -246,10 +561,19 @@ Saved 'co_cnn_resnet_anomaly_plot.png' and 'co_cnn_resnet_anomaly_plot.svg'
 Saved 'co_cnn_resnet_residual_plot.png' and 'co_cnn_resnet_residual_plot.svg'
 
 --- Anomaly Analysis Results (CO) ---
-Average Residual (Period 1): -0.0739
-Average Residual (Period 2): 0.0022
+Average Residual (Period 1): -0.1284
+Average Residual (Period 2): -0.1510
 (A negative residual means actual pollution was LOWER than predicted)
 
+Generating predictions for the full train/val fit...
+Full fit prediction generation complete.
+Generating train/val fit plots for each pollutant...
+  -> Plotting fit for NO2...
+Saved 'no2_cnn_resnet_train_fit_plot.png' and 'no2_cnn_resnet_train_fit_plot.svg'
+  -> Plotting fit for PM10...
+Saved 'pm10_cnn_resnet_train_fit_plot.png' and 'pm10_cnn_resnet_train_fit_plot.svg'
+  -> Plotting fit for CO...
+Saved 'co_cnn_resnet_train_fit_plot.png' and 'co_cnn_resnet_train_fit_plot.svg'
 
 --- Analysis Complete ---
 
@@ -257,11 +581,11 @@ Average Residual (Period 2): 0.0022
 ================================================================================
 
 --- INICIO DEL REGISTRO: LSTM ---
-Configuración: {'model': 'LSTM', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3}
+Configuración: {'model': 'LSTM', 'validation_strategy': 'simple', 'plot_fit': True, 'epochs': 100, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3, 'train_split_days': 240, 'val_split_days': 60}
 
 --- Using device: cuda ---
 --- Selected Model: LSTM ---
---- Full Config: Namespace(model='LSTM', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+--- Full Config: Namespace(model='LSTM', lr=0.0001, weight_decay=1e-05, epochs=100, patience=15, batch_size=64, seq_len=72, validation_strategy='simple', train_split_days=240, val_split_days=60, validation_split_ratio=0.2, plot_fit=True, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
 Loading data from weather-air-quality-clean.csv.bz2...
 Data loaded and date index set.
 Starting preprocessing and feature engineering...
@@ -288,39 +612,46 @@ Final features list (6): ['temperature_combined', 'relativehumidity_combined', '
 Interpolating missing values (method='time') for all 13 target/feature columns...
 Dropping any remaining NaN rows (e.g., from start of series)...
 Preprocessing complete. Final dataset shape: (129635, 41)
-Splitting data into train/val (around gap) and anomaly (gap)...
-Training data:   102709 rows (from 2 chunks)
-Validation data: 25678 rows (from 2 chunks)
-Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
-Data scaling complete.
-Creating training and validation sequences...
+Splitting data with SIMPLE validation strategy (80/20 split per-block)...
+Created 2 training chunks and 2 validation chunks.
+Scalers fitted on all training chunks.
 Total training sequences: 102565
 Total validation sequences: 25534
 
 --- Initializing model of type: LSTM ---
 Starting model training...
-Epoch 01/50 | Train MSE: 0.884861 | Val MSE: 0.659333 | Val MAE: 0.390836 | Val RMSE: 0.531607
+Epoch 01/100 | Train MSE: 0.798625 | Val MSE: 0.411732 | Val MAE: 0.494705 | Val RMSE: 0.610649
    (Validation MSE improved. Saving model to best_lstm_model.pth)
-Epoch 02/50 | Train MSE: 0.818344 | Val MSE: 0.648892 | Val MAE: 0.379936 | Val RMSE: 0.517297
+Epoch 02/100 | Train MSE: 0.708080 | Val MSE: 0.405973 | Val MAE: 0.488788 | Val RMSE: 0.602692
    (Validation MSE improved. Saving model to best_lstm_model.pth)
-Epoch 03/50 | Train MSE: 0.790654 | Val MSE: 0.639844 | Val MAE: 0.370860 | Val RMSE: 0.506523
+Epoch 03/100 | Train MSE: 0.675257 | Val MSE: 0.400709 | Val MAE: 0.483329 | Val RMSE: 0.597337
    (Validation MSE improved. Saving model to best_lstm_model.pth)
-Epoch 04/50 | Train MSE: 0.772319 | Val MSE: 0.653963 | Val MAE: 0.379049 | Val RMSE: 0.515896
-Epoch 05/50 | Train MSE: 0.755827 | Val MSE: 0.650830 | Val MAE: 0.373256 | Val RMSE: 0.510209
-Epoch 06/50 | Train MSE: 0.742135 | Val MSE: 0.652251 | Val MAE: 0.372363 | Val RMSE: 0.509311
-Epoch 07/50 | Train MSE: 0.730509 | Val MSE: 0.652675 | Val MAE: 0.370898 | Val RMSE: 0.507941
-Epoch 08/50 | Train MSE: 0.713489 | Val MSE: 0.659371 | Val MAE: 0.375749 | Val RMSE: 0.513419
-Epoch 09/50 | Train MSE: 0.701269 | Val MSE: 0.674604 | Val MAE: 0.379900 | Val RMSE: 0.519857
-Epoch 10/50 | Train MSE: 0.685752 | Val MSE: 0.688174 | Val MAE: 0.389214 | Val RMSE: 0.531593
-Epoch 11/50 | Train MSE: 0.673071 | Val MSE: 0.676912 | Val MAE: 0.382491 | Val RMSE: 0.522216
-Epoch 12/50 | Train MSE: 0.660108 | Val MSE: 0.662255 | Val MAE: 0.371427 | Val RMSE: 0.510677
-Epoch 13/50 | Train MSE: 0.645414 | Val MSE: 0.669509 | Val MAE: 0.375744 | Val RMSE: 0.516323
-Epoch 14/50 | Train MSE: 0.633491 | Val MSE: 0.670403 | Val MAE: 0.378446 | Val RMSE: 0.519262
-Epoch 15/50 | Train MSE: 0.623134 | Val MSE: 0.657369 | Val MAE: 0.371924 | Val RMSE: 0.510860
-Epoch 16/50 | Train MSE: 0.610937 | Val MSE: 0.655451 | Val MAE: 0.370147 | Val RMSE: 0.508360
-Epoch 17/50 | Train MSE: 0.603315 | Val MSE: 0.658436 | Val MAE: 0.371533 | Val RMSE: 0.509477
-Epoch 18/50 | Train MSE: 0.589587 | Val MSE: 0.657612 | Val MAE: 0.371322 | Val RMSE: 0.508378
-Early stopping triggered after 18 epochs.
+Epoch 04/100 | Train MSE: 0.655401 | Val MSE: 0.397156 | Val MAE: 0.481318 | Val RMSE: 0.595093
+   (Validation MSE improved. Saving model to best_lstm_model.pth)
+Epoch 05/100 | Train MSE: 0.638274 | Val MSE: 0.399370 | Val MAE: 0.483708 | Val RMSE: 0.596562
+Epoch 06/100 | Train MSE: 0.622587 | Val MSE: 0.396734 | Val MAE: 0.479055 | Val RMSE: 0.593517
+   (Validation MSE improved. Saving model to best_lstm_model.pth)
+Epoch 07/100 | Train MSE: 0.606527 | Val MSE: 0.398911 | Val MAE: 0.479678 | Val RMSE: 0.595326
+Epoch 08/100 | Train MSE: 0.593081 | Val MSE: 0.401104 | Val MAE: 0.481874 | Val RMSE: 0.596124
+Epoch 09/100 | Train MSE: 0.582571 | Val MSE: 0.400080 | Val MAE: 0.480280 | Val RMSE: 0.595877
+Epoch 10/100 | Train MSE: 0.569045 | Val MSE: 0.394506 | Val MAE: 0.475060 | Val RMSE: 0.590996
+   (Validation MSE improved. Saving model to best_lstm_model.pth)
+Epoch 11/100 | Train MSE: 0.555992 | Val MSE: 0.404799 | Val MAE: 0.481611 | Val RMSE: 0.597008
+Epoch 12/100 | Train MSE: 0.548469 | Val MSE: 0.395348 | Val MAE: 0.470214 | Val RMSE: 0.587297
+Epoch 13/100 | Train MSE: 0.538651 | Val MSE: 0.407236 | Val MAE: 0.474279 | Val RMSE: 0.592050
+Epoch 14/100 | Train MSE: 0.528814 | Val MSE: 0.414958 | Val MAE: 0.477587 | Val RMSE: 0.596423
+Epoch 15/100 | Train MSE: 0.520782 | Val MSE: 0.428531 | Val MAE: 0.483468 | Val RMSE: 0.603701
+Epoch 16/100 | Train MSE: 0.513338 | Val MSE: 0.409098 | Val MAE: 0.474246 | Val RMSE: 0.592016
+Epoch 17/100 | Train MSE: 0.505712 | Val MSE: 0.419266 | Val MAE: 0.478291 | Val RMSE: 0.598134
+Epoch 18/100 | Train MSE: 0.502709 | Val MSE: 0.412828 | Val MAE: 0.471630 | Val RMSE: 0.591568
+Epoch 19/100 | Train MSE: 0.495655 | Val MSE: 0.431576 | Val MAE: 0.484605 | Val RMSE: 0.604581
+Epoch 20/100 | Train MSE: 0.485808 | Val MSE: 0.424353 | Val MAE: 0.480256 | Val RMSE: 0.599680
+Epoch 21/100 | Train MSE: 0.489355 | Val MSE: 0.424312 | Val MAE: 0.481303 | Val RMSE: 0.602123
+Epoch 22/100 | Train MSE: 0.476796 | Val MSE: 0.405982 | Val MAE: 0.472458 | Val RMSE: 0.591307
+Epoch 23/100 | Train MSE: 0.471638 | Val MSE: 0.434911 | Val MAE: 0.483838 | Val RMSE: 0.605580
+Epoch 24/100 | Train MSE: 0.465456 | Val MSE: 0.423395 | Val MAE: 0.476410 | Val RMSE: 0.597612
+Epoch 25/100 | Train MSE: 0.459331 | Val MSE: 0.434292 | Val MAE: 0.481231 | Val RMSE: 0.604091
+Early stopping triggered after 25 epochs.
 Training finished.
 Generating predictions for the anomaly period...
 Prediction generation complete.
@@ -336,8 +667,8 @@ Saved 'no2_lstm_anomaly_plot.png' and 'no2_lstm_anomaly_plot.svg'
 Saved 'no2_lstm_residual_plot.png' and 'no2_lstm_residual_plot.svg'
 
 --- Anomaly Analysis Results (NO2) ---
-Average Residual (Period 1): -9.9292
-Average Residual (Period 2): -4.7190
+Average Residual (Period 1): -10.2690
+Average Residual (Period 2): -4.8258
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for PM10...
@@ -345,8 +676,8 @@ Saved 'pm10_lstm_anomaly_plot.png' and 'pm10_lstm_anomaly_plot.svg'
 Saved 'pm10_lstm_residual_plot.png' and 'pm10_lstm_residual_plot.svg'
 
 --- Anomaly Analysis Results (PM10) ---
-Average Residual (Period 1): -11.4819
-Average Residual (Period 2): -10.0303
+Average Residual (Period 1): -12.7623
+Average Residual (Period 2): -10.7977
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for CO...
@@ -354,10 +685,19 @@ Saved 'co_lstm_anomaly_plot.png' and 'co_lstm_anomaly_plot.svg'
 Saved 'co_lstm_residual_plot.png' and 'co_lstm_residual_plot.svg'
 
 --- Anomaly Analysis Results (CO) ---
-Average Residual (Period 1): -0.1417
-Average Residual (Period 2): -0.1456
+Average Residual (Period 1): -0.1259
+Average Residual (Period 2): -0.1237
 (A negative residual means actual pollution was LOWER than predicted)
 
+Generating predictions for the full train/val fit...
+Full fit prediction generation complete.
+Generating train/val fit plots for each pollutant...
+  -> Plotting fit for NO2...
+Saved 'no2_lstm_train_fit_plot.png' and 'no2_lstm_train_fit_plot.svg'
+  -> Plotting fit for PM10...
+Saved 'pm10_lstm_train_fit_plot.png' and 'pm10_lstm_train_fit_plot.svg'
+  -> Plotting fit for CO...
+Saved 'co_lstm_train_fit_plot.png' and 'co_lstm_train_fit_plot.svg'
 
 --- Analysis Complete ---
 
@@ -365,11 +705,11 @@ Average Residual (Period 2): -0.1456
 ================================================================================
 
 --- INICIO DEL REGISTRO: CNN_LSTM ---
-Configuración: {'model': 'CNN_LSTM', 'epochs': 50, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3}
+Configuración: {'model': 'CNN_LSTM', 'validation_strategy': 'simple', 'plot_fit': True, 'epochs': 100, 'patience': 15, 'batch_size': 64, 'seq_len': 72, 'lr': 0.0001, 'weight_decay': 1e-05, 'dropout': 0.3, 'train_split_days': 240, 'val_split_days': 60}
 
 --- Using device: cuda ---
 --- Selected Model: CNN_LSTM ---
---- Full Config: Namespace(model='CNN_LSTM', lr=0.0001, weight_decay=1e-05, epochs=50, patience=15, batch_size=64, seq_len=72, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
+--- Full Config: Namespace(model='CNN_LSTM', lr=0.0001, weight_decay=1e-05, epochs=100, patience=15, batch_size=64, seq_len=72, validation_strategy='simple', train_split_days=240, val_split_days=60, validation_split_ratio=0.2, plot_fit=True, dropout=0.3, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=64, n_head=4, num_encoder_layers=3, dim_feedforward=128) ---
 Loading data from weather-air-quality-clean.csv.bz2...
 Data loaded and date index set.
 Starting preprocessing and feature engineering...
@@ -396,40 +736,45 @@ Final features list (6): ['temperature_combined', 'relativehumidity_combined', '
 Interpolating missing values (method='time') for all 13 target/feature columns...
 Dropping any remaining NaN rows (e.g., from start of series)...
 Preprocessing complete. Final dataset shape: (129635, 41)
-Splitting data into train/val (around gap) and anomaly (gap)...
-Training data:   102709 rows (from 2 chunks)
-Validation data: 25678 rows (from 2 chunks)
-Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
-Data scaling complete.
-Creating training and validation sequences...
+Splitting data with SIMPLE validation strategy (80/20 split per-block)...
+Created 2 training chunks and 2 validation chunks.
+Scalers fitted on all training chunks.
 Total training sequences: 102565
 Total validation sequences: 25534
 
 --- Initializing model of type: CNN_LSTM ---
 Starting model training...
-Epoch 01/50 | Train MSE: 0.885255 | Val MSE: 0.669330 | Val MAE: 0.396428 | Val RMSE: 0.538155
+Epoch 01/100 | Train MSE: 0.805757 | Val MSE: 0.412801 | Val MAE: 0.497122 | Val RMSE: 0.611685
    (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
-Epoch 02/50 | Train MSE: 0.826659 | Val MSE: 0.642160 | Val MAE: 0.376217 | Val RMSE: 0.512216
+Epoch 02/100 | Train MSE: 0.721095 | Val MSE: 0.388773 | Val MAE: 0.476873 | Val RMSE: 0.591398
    (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
-Epoch 03/50 | Train MSE: 0.805347 | Val MSE: 0.656884 | Val MAE: 0.385173 | Val RMSE: 0.522889
-Epoch 04/50 | Train MSE: 0.790275 | Val MSE: 0.635997 | Val MAE: 0.371162 | Val RMSE: 0.505402
+Epoch 03/100 | Train MSE: 0.691533 | Val MSE: 0.398264 | Val MAE: 0.481603 | Val RMSE: 0.595569
+Epoch 04/100 | Train MSE: 0.675629 | Val MSE: 0.387353 | Val MAE: 0.471436 | Val RMSE: 0.587320
    (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
-Epoch 05/50 | Train MSE: 0.777342 | Val MSE: 0.644175 | Val MAE: 0.374486 | Val RMSE: 0.510785
-Epoch 06/50 | Train MSE: 0.766135 | Val MSE: 0.636921 | Val MAE: 0.367770 | Val RMSE: 0.503246
-Epoch 07/50 | Train MSE: 0.753566 | Val MSE: 0.642279 | Val MAE: 0.374140 | Val RMSE: 0.508249
-Epoch 08/50 | Train MSE: 0.737635 | Val MSE: 0.650952 | Val MAE: 0.379635 | Val RMSE: 0.515196
-Epoch 09/50 | Train MSE: 0.720936 | Val MSE: 0.663909 | Val MAE: 0.385503 | Val RMSE: 0.522538
-Epoch 10/50 | Train MSE: 0.707194 | Val MSE: 0.708984 | Val MAE: 0.418371 | Val RMSE: 0.562688
-Epoch 11/50 | Train MSE: 0.695032 | Val MSE: 0.669702 | Val MAE: 0.382602 | Val RMSE: 0.524378
-Epoch 12/50 | Train MSE: 0.681419 | Val MSE: 0.649382 | Val MAE: 0.369753 | Val RMSE: 0.507793
-Epoch 13/50 | Train MSE: 0.664740 | Val MSE: 0.689478 | Val MAE: 0.386272 | Val RMSE: 0.531369
-Epoch 14/50 | Train MSE: 0.650847 | Val MSE: 0.651588 | Val MAE: 0.371686 | Val RMSE: 0.510535
-Epoch 15/50 | Train MSE: 0.635789 | Val MSE: 0.692020 | Val MAE: 0.384811 | Val RMSE: 0.531765
-Epoch 16/50 | Train MSE: 0.618640 | Val MSE: 0.717429 | Val MAE: 0.389686 | Val RMSE: 0.541835
-Epoch 17/50 | Train MSE: 0.609040 | Val MSE: 0.733723 | Val MAE: 0.392429 | Val RMSE: 0.546068
-Epoch 18/50 | Train MSE: 0.590242 | Val MSE: 0.714228 | Val MAE: 0.387224 | Val RMSE: 0.538282
-Epoch 19/50 | Train MSE: 0.577490 | Val MSE: 0.765988 | Val MAE: 0.401081 | Val RMSE: 0.562349
-Early stopping triggered after 19 epochs.
+Epoch 05/100 | Train MSE: 0.660206 | Val MSE: 0.380601 | Val MAE: 0.468867 | Val RMSE: 0.582476
+   (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
+Epoch 06/100 | Train MSE: 0.646732 | Val MSE: 0.397176 | Val MAE: 0.480431 | Val RMSE: 0.595165
+Epoch 07/100 | Train MSE: 0.636150 | Val MSE: 0.383328 | Val MAE: 0.468814 | Val RMSE: 0.585406
+Epoch 08/100 | Train MSE: 0.619328 | Val MSE: 0.390326 | Val MAE: 0.474175 | Val RMSE: 0.590848
+Epoch 09/100 | Train MSE: 0.605883 | Val MSE: 0.388299 | Val MAE: 0.472017 | Val RMSE: 0.587291
+Epoch 10/100 | Train MSE: 0.594311 | Val MSE: 0.379455 | Val MAE: 0.465428 | Val RMSE: 0.581726
+   (Validation MSE improved. Saving model to best_cnn_lstm_model.pth)
+Epoch 11/100 | Train MSE: 0.585325 | Val MSE: 0.383884 | Val MAE: 0.465826 | Val RMSE: 0.582390
+Epoch 12/100 | Train MSE: 0.574407 | Val MSE: 0.384594 | Val MAE: 0.468751 | Val RMSE: 0.583815
+Epoch 13/100 | Train MSE: 0.563104 | Val MSE: 0.396115 | Val MAE: 0.471466 | Val RMSE: 0.589021
+Epoch 14/100 | Train MSE: 0.556520 | Val MSE: 0.417651 | Val MAE: 0.484294 | Val RMSE: 0.601888
+Epoch 15/100 | Train MSE: 0.547032 | Val MSE: 0.397357 | Val MAE: 0.475538 | Val RMSE: 0.592349
+Epoch 16/100 | Train MSE: 0.538527 | Val MSE: 0.389891 | Val MAE: 0.471595 | Val RMSE: 0.587321
+Epoch 17/100 | Train MSE: 0.538601 | Val MSE: 0.402088 | Val MAE: 0.478147 | Val RMSE: 0.594421
+Epoch 18/100 | Train MSE: 0.532969 | Val MSE: 0.392373 | Val MAE: 0.470719 | Val RMSE: 0.589008
+Epoch 19/100 | Train MSE: 0.525870 | Val MSE: 0.409844 | Val MAE: 0.479347 | Val RMSE: 0.597879
+Epoch 20/100 | Train MSE: 0.517438 | Val MSE: 0.408761 | Val MAE: 0.480262 | Val RMSE: 0.598556
+Epoch 21/100 | Train MSE: 0.516375 | Val MSE: 0.401962 | Val MAE: 0.474976 | Val RMSE: 0.593691
+Epoch 22/100 | Train MSE: 0.505904 | Val MSE: 0.403716 | Val MAE: 0.475556 | Val RMSE: 0.593166
+Epoch 23/100 | Train MSE: 0.511207 | Val MSE: 0.406105 | Val MAE: 0.477156 | Val RMSE: 0.595895
+Epoch 24/100 | Train MSE: 0.501259 | Val MSE: 0.392495 | Val MAE: 0.469901 | Val RMSE: 0.587484
+Epoch 25/100 | Train MSE: 0.494859 | Val MSE: 0.404419 | Val MAE: 0.476935 | Val RMSE: 0.595071
+Early stopping triggered after 25 epochs.
 Training finished.
 Generating predictions for the anomaly period...
 Prediction generation complete.
@@ -445,8 +790,8 @@ Saved 'no2_cnn_lstm_anomaly_plot.png' and 'no2_cnn_lstm_anomaly_plot.svg'
 Saved 'no2_cnn_lstm_residual_plot.png' and 'no2_cnn_lstm_residual_plot.svg'
 
 --- Anomaly Analysis Results (NO2) ---
-Average Residual (Period 1): -10.2997
-Average Residual (Period 2): -4.6966
+Average Residual (Period 1): -9.8499
+Average Residual (Period 2): -4.9137
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for PM10...
@@ -454,8 +799,8 @@ Saved 'pm10_cnn_lstm_anomaly_plot.png' and 'pm10_cnn_lstm_anomaly_plot.svg'
 Saved 'pm10_cnn_lstm_residual_plot.png' and 'pm10_cnn_lstm_residual_plot.svg'
 
 --- Anomaly Analysis Results (PM10) ---
-Average Residual (Period 1): -12.3227
-Average Residual (Period 2): -10.2304
+Average Residual (Period 1): -11.0487
+Average Residual (Period 2): -9.4276
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for CO...
@@ -463,10 +808,19 @@ Saved 'co_cnn_lstm_anomaly_plot.png' and 'co_cnn_lstm_anomaly_plot.svg'
 Saved 'co_cnn_lstm_residual_plot.png' and 'co_cnn_lstm_residual_plot.svg'
 
 --- Anomaly Analysis Results (CO) ---
-Average Residual (Period 1): -0.1129
-Average Residual (Period 2): -0.1228
+Average Residual (Period 1): -0.1161
+Average Residual (Period 2): -0.1300
 (A negative residual means actual pollution was LOWER than predicted)
 
+Generating predictions for the full train/val fit...
+Full fit prediction generation complete.
+Generating train/val fit plots for each pollutant...
+  -> Plotting fit for NO2...
+Saved 'no2_cnn_lstm_train_fit_plot.png' and 'no2_cnn_lstm_train_fit_plot.svg'
+  -> Plotting fit for PM10...
+Saved 'pm10_cnn_lstm_train_fit_plot.png' and 'pm10_cnn_lstm_train_fit_plot.svg'
+  -> Plotting fit for CO...
+Saved 'co_cnn_lstm_train_fit_plot.png' and 'co_cnn_lstm_train_fit_plot.svg'
 
 --- Analysis Complete ---
 
@@ -474,11 +828,11 @@ Average Residual (Period 2): -0.1228
 ================================================================================
 
 --- INICIO DEL REGISTRO: TRANSFORMER ---
-Configuración: {'model': 'TRANSFORMER', 'epochs': 50, 'patience': 7, 'batch_size': 32, 'seq_len': 72, 'lr': 3e-05, 'weight_decay': 1e-06, 'dropout': 0.1, 'd_model': 128, 'n_head': 8, 'num_encoder_layers': 4, 'dim_feedforward': 256}
+Configuración: {'model': 'TRANSFORMER', 'validation_strategy': 'simple', 'plot_fit': True, 'epochs': 50, 'patience': 7, 'batch_size': 32, 'seq_len': 72, 'lr': 3e-05, 'weight_decay': 1e-06, 'dropout': 0.1, 'd_model': 128, 'n_head': 8, 'num_encoder_layers': 4, 'dim_feedforward': 256, 'train_split_days': 240, 'val_split_days': 60}
 
 --- Using device: cuda ---
 --- Selected Model: TRANSFORMER ---
---- Full Config: Namespace(model='TRANSFORMER', lr=3e-05, weight_decay=1e-06, epochs=50, patience=7, batch_size=32, seq_len=72, dropout=0.1, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=128, n_head=8, num_encoder_layers=4, dim_feedforward=256) ---
+--- Full Config: Namespace(model='TRANSFORMER', lr=3e-05, weight_decay=1e-06, epochs=50, patience=7, batch_size=32, seq_len=72, validation_strategy='simple', train_split_days=240, val_split_days=60, validation_split_ratio=0.2, plot_fit=True, dropout=0.1, cnn_simple_channels=64, cnn_simple_layers=3, cnn_resnet_channels=64, cnn_resnet_blocks=3, cnn_kernel_size=3, d_model=128, n_head=8, num_encoder_layers=4, dim_feedforward=256) ---
 Loading data from weather-air-quality-clean.csv.bz2...
 Data loaded and date index set.
 Starting preprocessing and feature engineering...
@@ -505,36 +859,32 @@ Final features list (6): ['temperature_combined', 'relativehumidity_combined', '
 Interpolating missing values (method='time') for all 13 target/feature columns...
 Dropping any remaining NaN rows (e.g., from start of series)...
 Preprocessing complete. Final dataset shape: (129635, 41)
-Splitting data into train/val (around gap) and anomaly (gap)...
-Training data:   102709 rows (from 2 chunks)
-Validation data: 25678 rows (from 2 chunks)
-Anomaly (Test) data: 2020-03-20 00:00:00+00:00 to 2020-05-10 23:00:00+00:00 (1248 rows)
-Data scaling complete.
-Creating training and validation sequences...
+Splitting data with SIMPLE validation strategy (80/20 split per-block)...
+Created 2 training chunks and 2 validation chunks.
+Scalers fitted on all training chunks.
 Total training sequences: 102565
 Total validation sequences: 25534
 
 --- Initializing model of type: TRANSFORMER ---
 Starting model training...
-Epoch 01/50 | Train MSE: 0.863962 | Val MSE: 0.656704 | Val MAE: 0.387554 | Val RMSE: 0.514668
+Epoch 01/50 | Train MSE: 0.783029 | Val MSE: 0.445860 | Val MAE: 0.508159 | Val RMSE: 0.618863
    (Validation MSE improved. Saving model to best_transformer_model.pth)
-Epoch 02/50 | Train MSE: 0.799639 | Val MSE: 0.660356 | Val MAE: 0.382081 | Val RMSE: 0.509696
-Epoch 03/50 | Train MSE: 0.749899 | Val MSE: 0.655596 | Val MAE: 0.374505 | Val RMSE: 0.501456
+Epoch 02/50 | Train MSE: 0.700232 | Val MSE: 0.422812 | Val MAE: 0.485043 | Val RMSE: 0.595706
    (Validation MSE improved. Saving model to best_transformer_model.pth)
-Epoch 04/50 | Train MSE: 0.703187 | Val MSE: 0.656497 | Val MAE: 0.376778 | Val RMSE: 0.504676
-Epoch 05/50 | Train MSE: 0.656267 | Val MSE: 0.655447 | Val MAE: 0.378760 | Val RMSE: 0.507268
+Epoch 03/50 | Train MSE: 0.647732 | Val MSE: 0.414720 | Val MAE: 0.483600 | Val RMSE: 0.593459
    (Validation MSE improved. Saving model to best_transformer_model.pth)
-Epoch 06/50 | Train MSE: 0.610076 | Val MSE: 0.667039 | Val MAE: 0.386198 | Val RMSE: 0.517266
-Epoch 07/50 | Train MSE: 0.572390 | Val MSE: 0.653800 | Val MAE: 0.376619 | Val RMSE: 0.507371
+Epoch 04/50 | Train MSE: 0.608890 | Val MSE: 0.414015 | Val MAE: 0.478182 | Val RMSE: 0.589960
    (Validation MSE improved. Saving model to best_transformer_model.pth)
-Epoch 08/50 | Train MSE: 0.536671 | Val MSE: 0.679324 | Val MAE: 0.390257 | Val RMSE: 0.527198
-Epoch 09/50 | Train MSE: 0.503675 | Val MSE: 0.664895 | Val MAE: 0.380665 | Val RMSE: 0.514375
-Epoch 10/50 | Train MSE: 0.472841 | Val MSE: 0.666569 | Val MAE: 0.378968 | Val RMSE: 0.512754
-Epoch 11/50 | Train MSE: 0.454059 | Val MSE: 0.670620 | Val MAE: 0.382165 | Val RMSE: 0.515894
-Epoch 12/50 | Train MSE: 0.435057 | Val MSE: 0.674276 | Val MAE: 0.384333 | Val RMSE: 0.520322
-Epoch 13/50 | Train MSE: 0.414492 | Val MSE: 0.684385 | Val MAE: 0.388289 | Val RMSE: 0.526881
-Epoch 14/50 | Train MSE: 0.398298 | Val MSE: 0.698292 | Val MAE: 0.393744 | Val RMSE: 0.532214
-Early stopping triggered after 14 epochs.
+Epoch 05/50 | Train MSE: 0.573147 | Val MSE: 0.402968 | Val MAE: 0.475186 | Val RMSE: 0.584693
+   (Validation MSE improved. Saving model to best_transformer_model.pth)
+Epoch 06/50 | Train MSE: 0.541101 | Val MSE: 0.407926 | Val MAE: 0.481977 | Val RMSE: 0.591132
+Epoch 07/50 | Train MSE: 0.514021 | Val MSE: 0.415378 | Val MAE: 0.486414 | Val RMSE: 0.597681
+Epoch 08/50 | Train MSE: 0.487978 | Val MSE: 0.411870 | Val MAE: 0.480823 | Val RMSE: 0.592853
+Epoch 09/50 | Train MSE: 0.467478 | Val MSE: 0.408908 | Val MAE: 0.483791 | Val RMSE: 0.593773
+Epoch 10/50 | Train MSE: 0.447636 | Val MSE: 0.422646 | Val MAE: 0.486633 | Val RMSE: 0.599148
+Epoch 11/50 | Train MSE: 0.430432 | Val MSE: 0.412695 | Val MAE: 0.483222 | Val RMSE: 0.594691
+Epoch 12/50 | Train MSE: 0.414559 | Val MSE: 0.414988 | Val MAE: 0.483523 | Val RMSE: 0.595463
+Early stopping triggered after 12 epochs.
 Training finished.
 Generating predictions for the anomaly period...
 Prediction generation complete.
@@ -550,8 +900,8 @@ Saved 'no2_transformer_anomaly_plot.png' and 'no2_transformer_anomaly_plot.svg'
 Saved 'no2_transformer_residual_plot.png' and 'no2_transformer_residual_plot.svg'
 
 --- Anomaly Analysis Results (NO2) ---
-Average Residual (Period 1): -9.0397
-Average Residual (Period 2): -3.6085
+Average Residual (Period 1): -10.0416
+Average Residual (Period 2): -4.5106
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for PM10...
@@ -559,8 +909,8 @@ Saved 'pm10_transformer_anomaly_plot.png' and 'pm10_transformer_anomaly_plot.svg
 Saved 'pm10_transformer_residual_plot.png' and 'pm10_transformer_residual_plot.svg'
 
 --- Anomaly Analysis Results (PM10) ---
-Average Residual (Period 1): -11.9239
-Average Residual (Period 2): -9.6385
+Average Residual (Period 1): -11.8828
+Average Residual (Period 2): -8.7364
 (A negative residual means actual pollution was LOWER than predicted)
 
   -> Plotting for CO...
@@ -568,10 +918,19 @@ Saved 'co_transformer_anomaly_plot.png' and 'co_transformer_anomaly_plot.svg'
 Saved 'co_transformer_residual_plot.png' and 'co_transformer_residual_plot.svg'
 
 --- Anomaly Analysis Results (CO) ---
-Average Residual (Period 1): -0.1320
-Average Residual (Period 2): -0.1194
+Average Residual (Period 1): -0.1172
+Average Residual (Period 2): -0.1280
 (A negative residual means actual pollution was LOWER than predicted)
 
+Generating predictions for the full train/val fit...
+Full fit prediction generation complete.
+Generating train/val fit plots for each pollutant...
+  -> Plotting fit for NO2...
+Saved 'no2_transformer_train_fit_plot.png' and 'no2_transformer_train_fit_plot.svg'
+  -> Plotting fit for PM10...
+Saved 'pm10_transformer_train_fit_plot.png' and 'pm10_transformer_train_fit_plot.svg'
+  -> Plotting fit for CO...
+Saved 'co_transformer_train_fit_plot.png' and 'co_transformer_train_fit_plot.svg'
 
 --- Analysis Complete ---
 

@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 """
-v13: Script de Análisis (Motor parametrizado)
+v18: Script de Análisis (Motor parametrizado)
 
-v13: Añade "CNN_SIMPLE" (CNN apilable) y "CNN_RESNET" (ResNet)
-     como opciones de modelo distintas. Ahora hay 5 arquitecturas.
+v18: Corrige dos bugs críticos:
+     1. La estrategia "simple" ahora toma el 20% de *cada*
+        bloque (pre y post gap), no solo el 20% del final.
+     2. 'get_full_fit_predictions' ahora crea DFs separados
+        para pre y post gap antes de concatenar, eliminando
+        la línea de ploteo incorrecta sobre el gap.
 """
 
 import pandas as pd
@@ -29,8 +33,6 @@ TARGET_POLLUTANTS = ['no2', 'pm10', 'co']
 ANOMALY_START_DATE = '2020-03-20T00:00:00Z'
 ANOMALY_END_DATE = '2020-05-10T23:00:00Z'
 ANOMALY_PERIOD_1_END = '2020-04-12T23:00:00Z'
-# Constantes de entrenamiento
-VALIDATION_SPLIT = 0.2
 # Set device
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -107,7 +109,7 @@ def preprocess_data(df, target_pollutants):
         
         if fallback_col in df.columns:
             print(f"  -> Using {fallback_col} as fallback for {combined_col_name}")
-            df[combined_col_name].fillna(df[fallback_col], inplace=True)
+            df[combined_col_name] = df[combined_col_name].fillna(df[fallback_col])
         else:
             print(f"Warning: No fallback column {fallback_col} found for {var}.")
 
@@ -149,71 +151,245 @@ def preprocess_data(df, target_pollutants):
     return df, features_list, target_cols
 
 
-# --- 4. Data Splitting and Scaling Function ---
-def split_and_scale_data(df, features_list, target_cols, anomaly_start, anomaly_end):
-    """
-    Splits data into 'normal' (train/val) and 'anomaly' (test).
-    Trains on data *around* the anomaly gap.
-    """
-    print("Splitting data into train/val (around gap) and anomaly (gap)...")
-    
-    anomaly_df = df.loc[anomaly_start : anomaly_end].copy()
-    train_val_df_part1 = df.loc[df.index < anomaly_start].copy()
-    train_val_df_part2 = df.loc[df.index > anomaly_end].copy()
+# --- 4. Splitting, Scaling, and Sequencing ---
 
-    if train_val_df_part1.empty or train_val_df_part2.empty:
-        print("FATAL ERROR: Not enough data before or after the anomaly period to train.")
-        sys.exit(1)
-    if anomaly_df.empty:
-        print("FATAL ERROR: No data found for the anomaly period.")
-        sys.exit(1)
-
-    train_df_part1, val_df_part1 = train_test_split(train_val_df_part1, test_size=VALIDATION_SPLIT, shuffle=False)
-    train_df_part2, val_df_part2 = train_test_split(train_val_df_part2, test_size=VALIDATION_SPLIT, shuffle=False)
-    
-    train_df = pd.concat([train_df_part1, train_df_part2])
-    val_df = pd.concat([val_df_part1, val_df_part2])
-
-    print(f"Training data:   {len(train_df)} rows (from 2 chunks)")
-    print(f"Validation data: {len(val_df)} rows (from 2 chunks)")
-    print(f"Anomaly (Test) data: {anomaly_df.index.min()} to {anomaly_df.index.max()} ({len(anomaly_df)} rows)")
-
-    feature_scaler = StandardScaler()
-    target_scaler = StandardScaler()
-
-    # Fit scalers ONLY on training data
-    feature_scaler.fit(train_df[features_list])
-    target_scaler.fit(train_df[target_cols]) 
-
-    # Transform all datasets
-    for df_split in [train_df_part1, val_df_part1, train_df_part2, val_df_part2, anomaly_df]:
-        df_split[features_list] = feature_scaler.transform(df_split[features_list])
-        df_split[target_cols] = target_scaler.transform(df_split[target_cols])
-
-    print("Data scaling complete.")
-    
-    return (train_df_part1, val_df_part1, 
-            train_df_part2, val_df_part2, 
-            anomaly_df, 
-            feature_scaler, target_scaler)
-
-
-# --- 5. Sequence Creation Function ---
 def create_sequences(df, features_list, target_cols, seq_length):
-    """Converts a time-series dataframe into X (sequences) and y (targets)"""
+    """Helper: Converts a time-series dataframe into X (sequences) and y (targets)"""
     X, y = [], []
     features = df[features_list].values
-    target = df[target_cols].values # y is now a 2D array [N, n_targets]
+    target = df[target_cols].values 
 
     for i in range(len(df) - seq_length):
         X.append(features[i : i + seq_length])
         y.append(target[i + seq_length])
         
     if not X:
-        print("Warning: No sequences created. Data block may be too short for sequence length.")
         return np.array([]), np.array([])
 
     return np.array(X), np.array(y) 
+
+# --- ESTRATEGIA 1: INTERLEAVED ---
+def _get_interleaved_chunks(df, train_days, val_days):
+    """Helper: Splits a dataframe into interleaved train/val chunks."""
+    n_train = int(train_days * 24)
+    n_val = int(val_days * 24)
+    
+    if n_train <= 0 or n_val <= 0:
+        print("Warning: train_split_days or val_split_days is too small. Defaulting to simple split.")
+        return [df.iloc[:int(len(df)*0.8)]], [df.iloc[int(len(df)*0.8):]]
+
+    train_chunks, val_chunks = [], []
+    cursor = 0
+    
+    while cursor < len(df):
+        train_end = cursor + n_train
+        val_end = train_end + n_val
+        
+        if train_end > len(df):
+            train_end = len(df)
+            val_end = len(df)
+        elif val_end > len(df):
+            val_end = len(df)
+            
+        if cursor < train_end:
+            train_chunks.append(df.iloc[cursor:train_end])
+            
+        if train_end < val_end:
+            val_chunks.append(df.iloc[train_end:val_end])
+            
+        cursor = val_end
+        
+    return train_chunks, val_chunks
+
+def split_scale_and_sequence_interleaved(df, features_list, target_cols, anomaly_start, anomaly_end, 
+                                         train_days, val_days, seq_len, batch_size):
+    """Implementa la estrategia de validación por intervalos."""
+    print("Splitting data with INTERLEAVED validation strategy...")
+    
+    # 1. Separar los 3 bloques principales
+    anomaly_df = df.loc[anomaly_start : anomaly_end].copy()
+    pre_gap_df = df.loc[df.index < anomaly_start].copy()
+    post_gap_df = df.loc[df.index > anomaly_end].copy()
+
+    if pre_gap_df.empty or post_gap_df.empty:
+        sys.exit("FATAL ERROR: Not enough data before or after the anomaly period to train.")
+    if anomaly_df.empty:
+        sys.exit("FATAL ERROR: No data found for the anomaly period.")
+
+    # 2. Obtener chunks de train/val para ambos períodos (pre y post)
+    train_chunks_p1, val_chunks_p1 = _get_interleaved_chunks(pre_gap_df, train_days, val_days)
+    train_chunks_p2, val_chunks_p2 = _get_interleaved_chunks(post_gap_df, train_days, val_days)
+    
+    all_train_chunks = train_chunks_p1 + train_chunks_p2
+    all_val_chunks = val_chunks_p1 + val_chunks_p2
+    
+    if not all_train_chunks or not all_val_chunks:
+        sys.exit("FATAL ERROR: No train or validation chunks were created.")
+        
+    print(f"Created {len(all_train_chunks)} training chunks and {len(all_val_chunks)} validation chunks.")
+
+    # 3. Ajustar los scalers
+    feature_scaler = StandardScaler()
+    target_scaler = StandardScaler()
+    
+    train_df_for_scaling = pd.concat(all_train_chunks)
+    feature_scaler.fit(train_df_for_scaling[features_list])
+    target_scaler.fit(train_df_for_scaling[target_cols])
+    print("Scalers fitted on all training chunks.")
+
+    # 4. Escalar todos los dataframes
+    pre_gap_df_scaled = pre_gap_df.copy()
+    pre_gap_df_scaled[features_list] = feature_scaler.transform(pre_gap_df[features_list])
+    pre_gap_df_scaled[target_cols] = target_scaler.transform(pre_gap_df[target_cols])
+    
+    post_gap_df_scaled = post_gap_df.copy()
+    post_gap_df_scaled[features_list] = feature_scaler.transform(post_gap_df[features_list])
+    post_gap_df_scaled[target_cols] = target_scaler.transform(post_gap_df[target_cols])
+    
+    anomaly_df_scaled = anomaly_df.copy()
+    anomaly_df_scaled[features_list] = feature_scaler.transform(anomaly_df[features_list])
+    anomaly_df_scaled[target_cols] = target_scaler.transform(anomaly_df[target_cols])
+    
+    # 5. Escalar y crear secuencias para cada chunk (para DataLoaders)
+    def _process_chunks_scaled(chunks, scaler_f, scaler_t):
+        X_list, y_list = [], []
+        for chunk in chunks:
+            chunk_scaled = chunk.copy()
+            chunk_scaled[features_list] = scaler_f.transform(chunk[features_list])
+            chunk_scaled[target_cols] = scaler_t.transform(chunk[target_cols])
+            
+            X, y = create_sequences(chunk_scaled, features_list, target_cols, seq_len)
+            
+            if X.size > 0:
+                X_list.append(X)
+                y_list.append(y)
+        return X_list, y_list
+
+    X_train_list, y_train_list = _process_chunks_scaled(all_train_chunks, feature_scaler, target_scaler)
+    X_val_list, y_val_list = _process_chunks_scaled(all_val_chunks, feature_scaler, target_scaler)
+
+    # 6. Concatenar secuencias y crear DataLoaders
+    X_train = np.concatenate(X_train_list)
+    y_train = np.concatenate(y_train_list)
+    X_val = np.concatenate(X_val_list)
+    y_val = np.concatenate(y_val_list)
+    
+    if X_train.size == 0 or X_val.size == 0:
+        sys.exit("FATAL ERROR: No sequences created. Check seq_len and chunk sizes.")
+
+    print(f"Total training sequences: {len(X_train)}")
+    print(f"Total validation sequences: {len(X_val)}")
+    
+    train_dataset = TensorDataset(torch.tensor(X_train, dtype=torch.float32), 
+                                torch.tensor(y_train, dtype=torch.float32))
+    val_dataset = TensorDataset(torch.tensor(X_val, dtype=torch.float32), 
+                              torch.tensor(y_val, dtype=torch.float32))
+    
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
+    # 7. Devolver todo
+    return (train_loader, val_loader, 
+            feature_scaler, target_scaler, 
+            anomaly_df_scaled, 
+            pre_gap_df_scaled, post_gap_df_scaled,
+            all_val_chunks)
+
+# --- ESTRATEGIA 2: SIMPLE (CORREGIDA) ---
+def split_scale_and_sequence_simple(df, features_list, target_cols, anomaly_start, anomaly_end, 
+                                     validation_split_ratio, seq_len, batch_size):
+    """Implementa la estrategia de validación simple (ej. 80/20 por bloque)."""
+    print("Splitting data with SIMPLE validation strategy (80/20 split per-block)...")
+    
+    # 1. Separar los 3 bloques principales
+    anomaly_df = df.loc[anomaly_start : anomaly_end].copy()
+    pre_gap_df = df.loc[df.index < anomaly_start].copy()
+    post_gap_df = df.loc[df.index > anomaly_end].copy()
+
+    if pre_gap_df.empty or post_gap_df.empty:
+        sys.exit("FATAL ERROR: Not enough data before or after the anomaly period to train.")
+    if anomaly_df.empty:
+        sys.exit("FATAL ERROR: No data found for the anomaly period.")
+        
+    # 2. Dividir CADA bloque (pre y post) en train/val
+    train_df_p1, val_df_p1 = train_test_split(
+        pre_gap_df, test_size=validation_split_ratio, shuffle=False
+    )
+    train_df_p2, val_df_p2 = train_test_split(
+        post_gap_df, test_size=validation_split_ratio, shuffle=False
+    )
+    
+    all_train_chunks = [train_df_p1, train_df_p2]
+    all_val_chunks = [val_df_p1, val_df_p2] # Guardar (sin escalar) para ploteo
+    
+    print(f"Created 2 training chunks and 2 validation chunks.")
+
+    # 3. Ajustar los scalers SÓLO en los chunks de train
+    feature_scaler = StandardScaler()
+    target_scaler = StandardScaler()
+    
+    train_df_for_scaling = pd.concat(all_train_chunks)
+    feature_scaler.fit(train_df_for_scaling[features_list])
+    target_scaler.fit(train_df_for_scaling[target_cols])
+    print("Scalers fitted on all training chunks.")
+    
+    # 4. Escalar todos los dataframes (para ploteo de ajuste)
+    pre_gap_df_scaled = pre_gap_df.copy()
+    pre_gap_df_scaled[features_list] = feature_scaler.transform(pre_gap_df[features_list])
+    pre_gap_df_scaled[target_cols] = target_scaler.transform(pre_gap_df[target_cols])
+    
+    post_gap_df_scaled = post_gap_df.copy()
+    post_gap_df_scaled[features_list] = feature_scaler.transform(post_gap_df[features_list])
+    post_gap_df_scaled[target_cols] = target_scaler.transform(post_gap_df[target_cols])
+    
+    anomaly_df_scaled = anomaly_df.copy()
+    anomaly_df_scaled[features_list] = feature_scaler.transform(anomaly_df[features_list])
+    anomaly_df_scaled[target_cols] = target_scaler.transform(anomaly_df[target_cols])
+    
+    # 5. Escalar y crear secuencias para cada chunk (para DataLoaders)
+    def _process_chunks_scaled(chunks, scaler_f, scaler_t):
+        X_list, y_list = [], []
+        for chunk in chunks:
+            chunk_scaled = chunk.copy()
+            chunk_scaled[features_list] = scaler_f.transform(chunk[features_list])
+            chunk_scaled[target_cols] = scaler_t.transform(chunk[target_cols])
+            
+            X, y = create_sequences(chunk_scaled, features_list, target_cols, seq_len)
+            
+            if X.size > 0:
+                X_list.append(X)
+                y_list.append(y)
+        return X_list, y_list
+
+    X_train_list, y_train_list = _process_chunks_scaled(all_train_chunks, feature_scaler, target_scaler)
+    X_val_list, y_val_list = _process_chunks_scaled(all_val_chunks, feature_scaler, target_scaler)
+    
+    # 6. Concatenar secuencias y crear DataLoaders
+    X_train = np.concatenate(X_train_list)
+    y_train = np.concatenate(y_train_list)
+    X_val = np.concatenate(X_val_list)
+    y_val = np.concatenate(y_val_list)
+
+    if X_train.size == 0 or X_val.size == 0:
+        sys.exit("FATAL ERROR: No sequences created. Check seq_len and data sizes.")
+        
+    print(f"Total training sequences: {len(X_train)}")
+    print(f"Total validation sequences: {len(X_val)}")
+    
+    train_dataset = TensorDataset(torch.tensor(X_train, dtype=torch.float32), 
+                                torch.tensor(y_train, dtype=torch.float32))
+    val_dataset = TensorDataset(torch.tensor(X_val, dtype=torch.float32), 
+                              torch.tensor(y_val, dtype=torch.float32))
+    
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    
+    # 7. Devolver todo
+    return (train_loader, val_loader, 
+            feature_scaler, target_scaler, 
+            anomaly_df_scaled, 
+            pre_gap_df_scaled, post_gap_df_scaled, # Para el nuevo plot
+            all_val_chunks) # Para las fechas del plot
 
 
 # --- 6. PyTorch Model Definitions ---
@@ -268,7 +444,7 @@ class LstmOnlyModel(nn.Module):
         out = self.linear(hidden)
         return out
 
-# --- Model 3: CNN Simple (NUEVO) ---
+# --- Model 3: CNN Simple ---
 class CnnSimpleModel(nn.Module):
     """Un modelo 1D-CNN apilable."""
     def __init__(self, num_features, num_targets, channels, kernel_size, num_layers, dropout_rate):
@@ -281,7 +457,7 @@ class CnnSimpleModel(nn.Module):
             layers.append(nn.Conv1d(in_channels, channels, kernel_size, padding='same'))
             layers.append(nn.ReLU())
             layers.append(nn.Dropout(dropout_rate))
-            in_channels = channels # Las capas subsecuentes tienen 'channels' como entrada
+            in_channels = channels 
             
         self.network = nn.Sequential(*layers)
         
@@ -290,15 +466,14 @@ class CnnSimpleModel(nn.Module):
         self.linear = nn.Linear(channels, num_targets)
 
     def forward(self, x):
-        # Input x: (batch, seq_len, features)
-        x = x.permute(0, 2, 1) # -> (batch, features, seq_len)
-        x = self.network(x)     # -> (batch, channels, seq_len)
-        x = self.pool(x)        # -> (batch, channels, 1)
-        x = self.flatten(x)     # -> (batch, channels)
+        x = x.permute(0, 2, 1) 
+        x = self.network(x)     
+        x = self.pool(x)        
+        x = self.flatten(x)     
         out = self.linear(x)
         return out
 
-# --- Model 4: CNN ResNet (RENOMBRADO) ---
+# --- Model 4: CNN ResNet ---
 class ResNetBlock(nn.Module):
     """Un bloque residual para 1D CNN."""
     def __init__(self, in_channels, out_channels, kernel_size, dropout):
@@ -350,8 +525,7 @@ class CnnResNetModel(nn.Module):
         self.linear = nn.Linear(channels, num_targets)
 
     def forward(self, x):
-        # Input x: (batch, seq_len, features)
-        x = x.permute(0, 2, 1) # -> (batch, features, seq_len)
+        x = x.permute(0, 2, 1) 
         x = self.stem(x)
         x = self.blocks(x)
         x = self.pool(x)
@@ -495,14 +669,19 @@ def train_model(model, train_loader, val_loader, mse_criterion, mae_criterion, o
             train_rmse_history, val_rmse_history)
 
 
-# --- 8. Prediction Function ---
-def get_anomaly_predictions(model, anomaly_df, features_list, target_cols, seq_length, scaler):
-    """Generates predictions for the held-out anomaly period."""
+# --- 8. Prediction Functions ---
+def get_anomaly_predictions(model, anomaly_df_scaled, features_list, target_cols, 
+                             seq_length, scaler_t):
+    """
+    Generates predictions for the held-out anomaly period.
+    """
     print("Generating predictions for the anomaly period...")
     model.eval()
     
-    X_anomaly, y_anomaly = create_sequences(anomaly_df, features_list, target_cols, seq_length)
-    results_index = anomaly_df.index[seq_length:]
+    X_anomaly, y_anomaly = create_sequences(
+        anomaly_df_scaled, features_list, target_cols, seq_length
+    )
+    results_index = anomaly_df_scaled.index[seq_length:]
     
     X_anomaly_tensor = torch.tensor(X_anomaly, dtype=torch.float32)
     y_anomaly_tensor = torch.tensor(y_anomaly, dtype=torch.float32)
@@ -516,15 +695,12 @@ def get_anomaly_predictions(model, anomaly_df, features_list, target_cols, seq_l
             inputs = inputs.to(DEVICE)
             outputs = model(inputs)
             predictions.append(outputs.cpu().numpy())
-    predictions = np.concatenate(predictions) # Shape: [N, n_targets]
+    predictions = np.concatenate(predictions)
     
-    # Inverse transform to get original scales
-    y_all_unscaled = scaler.inverse_transform(y_anomaly)
-    predictions_unscaled = scaler.inverse_transform(predictions)
+    y_all_unscaled = scaler_t.inverse_transform(y_anomaly)
+    predictions_unscaled = scaler_t.inverse_transform(predictions)
 
-    # Create Results DataFrame
     results_df = pd.DataFrame(index=results_index)
-    
     pollutants = [c.replace('_target', '') for c in target_cols] 
     
     for i, poll in enumerate(pollutants):
@@ -535,8 +711,66 @@ def get_anomaly_predictions(model, anomaly_df, features_list, target_cols, seq_l
     print("Prediction generation complete.")
     return results_df, pollutants
 
+# --- CORREGIDO: Lógica para evitar la línea sobre el gap ---
+def get_full_fit_predictions(model, df1_scaled, df2_scaled, 
+                             features_list, target_cols, seq_length, scaler_t):
+    """
+    Genera predicciones sobre todos los datos de entrenamiento/validación.
+    Maneja los dataframes pre y post gap por separado para evitar
+    plotear una línea sobre el gap.
+    """
+    print("Generating predictions for the full train/val fit...")
+    model.eval()
+    
+    pollutants = [c.replace('_target', '') for c in target_cols]
+    all_results_dfs = []
 
-# --- 9. Plotting Functions (Spanish Labels + SVG) ---
+    for df_scaled in [df1_scaled, df2_scaled]:
+        if df_scaled is None or df_scaled.empty:
+            continue
+            
+        # 1. Crear secuencias
+        X, y = create_sequences(df_scaled, features_list, target_cols, seq_length)
+        if X.size == 0:
+            continue
+            
+        idx = df_scaled.index[seq_length:]
+        
+        # 2. Crear DataLoader
+        X_tensor = torch.tensor(X, dtype=torch.float32)
+        y_tensor = torch.tensor(y, dtype=torch.float32)
+        dataset = TensorDataset(X_tensor, y_tensor)
+        loader = DataLoader(dataset, batch_size=4096, shuffle=False)
+        
+        # 3. Generar predicciones
+        predictions = []
+        with torch.no_grad():
+            for inputs, _ in loader:
+                inputs = inputs.to(DEVICE)
+                outputs = model(inputs)
+                predictions.append(outputs.cpu().numpy())
+        predictions = np.concatenate(predictions)
+
+        # 4. Invertir escala
+        y_unscaled = scaler_t.inverse_transform(y)
+        pred_unscaled = scaler_t.inverse_transform(predictions)
+
+        # 5. Crear DataFrame de resultados
+        results_df = pd.DataFrame(index=idx)
+        for i, poll in enumerate(pollutants):
+            results_df[f'Actual_{poll}'] = y_unscaled[:, i]
+            results_df[f'Predicted_{poll}'] = pred_unscaled[:, i]
+        
+        all_results_dfs.append(results_df)
+    
+    # 6. Concatenar los DataFrames (mantiene el gap)
+    final_results_df = pd.concat(all_results_dfs)
+    
+    print("Full fit prediction generation complete.")
+    return final_results_df, pollutants
+
+
+# --- 9. Plotting Functions ---
 
 def plot_metric_curves(train_history, val_history, metric_name, file_name_base):
     """
@@ -637,6 +871,74 @@ def plot_results(results_df, pollutants, period_1_end_date, model_type_name):
         print("(A negative residual means actual pollution was LOWER than predicted)\n")
 
 
+# --- 9.5. FUNCIÓN DE PLOTEO DE AJUSTE (CORREGIDA) ---
+def plot_train_val_fit(results_df, val_chunks, pollutants, model_type_name):
+    """
+    Plotea el ajuste Real vs. Predicho sobre todo el conjunto de
+    entrenamiento/validación, destacando los chunks de validación.
+    
+    v18: Corregido para plotear pre-gap y post-gap por separado
+         y así evitar la línea sobre el "gap" de anomalía.
+    """
+    print("Generating train/val fit plots for each pollutant...")
+    model_name_safe = model_type_name.lower()
+
+    # Dividir el dataframe de resultados en pre-gap y post-gap
+    # Usamos las constantes globales para encontrar el gap
+    df_pre_gap = results_df.loc[results_df.index < ANOMALY_START_DATE]
+    df_post_gap = results_df.loc[results_df.index > ANOMALY_END_DATE]
+
+    for poll in pollutants:
+        print(f"  -> Plotting fit for {poll.upper()}...")
+        actual_col = f'Actual_{poll}'
+        predicted_col = f'Predicted_{poll}'
+        
+        if actual_col not in results_df.columns:
+            print(f"    Skipping {poll.upper()} plots (no data).")
+            continue
+            
+        poll_upper = poll.upper()
+
+        plt.figure(figsize=(20, 10))
+        
+        # --- PLOTEO CORREGIDO ---
+        # 1. Plotear la parte PRE-GAP
+        plt.plot(df_pre_gap.index, df_pre_gap[actual_col], 
+                 label=f'{poll_upper} Real', color='blue', alpha=0.7, linewidth=0.8)
+        plt.plot(df_pre_gap.index, df_pre_gap[predicted_col], 
+                 label=f'{poll_upper} Predicho', color='red', linestyle='--', alpha=0.8, linewidth=0.8)
+        
+        # 2. Plotear la parte POST-GAP (sin etiquetas para evitar duplicados en la leyenda)
+        plt.plot(df_post_gap.index, df_post_gap[actual_col], 
+                 color='blue', alpha=0.7, linewidth=0.8)
+        plt.plot(df_post_gap.index, df_post_gap[predicted_col], 
+                 color='red', linestyle='--', alpha=0.8, linewidth=0.8)
+        # --- FIN DE LA CORRECCIÓN ---
+
+        # Resaltar los chunks de validación
+        label_added = False
+        for chunk in val_chunks:
+            if chunk.empty: continue
+            plt.axvspan(chunk.index.min(), chunk.index.max(), 
+                        color='orange', alpha=0.2, 
+                        label='Períodos de Validación' if not label_added else None)
+            label_added = True
+
+        plt.title(f"Ajuste del Modelo en Train/Val ({poll_upper} - {model_type_name})")
+        plt.ylabel(f"Nivel de {poll_upper}")
+        plt.xlabel("Fecha")
+        plt.legend()
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        
+        # Guardar archivos
+        png_name = f'{poll}_{model_name_safe}_train_fit_plot.png'
+        svg_name = f'{poll}_{model_name_safe}_train_fit_plot.svg'
+        plt.savefig(png_name)
+        plt.savefig(svg_name)
+        print(f"Saved '{png_name}' and '{svg_name}'")
+
+
 # --- 10. Main Execution (MODIFICADO) ---
 def main():
     """Main function to run the complete pipeline."""
@@ -656,6 +958,17 @@ def main():
     parser.add_argument('--patience', type=int, default=5, help='Early stopping patience')
     parser.add_argument('--batch_size', type=int, default=64, help='Batch size')
     parser.add_argument('--seq_len', type=int, default=72, help='Sequence length')
+    
+    # Argumentos de Estrategia de Validación
+    parser.add_argument('--validation_strategy', type=str, default='interleaved', 
+                        choices=['interleaved', 'simple'], help='Validation strategy')
+    parser.add_argument('--train_split_days', type=int, default=240, help='Days per training chunk (interleaved)')
+    parser.add_argument('--val_split_days', type=int, default=60, help='Days per validation chunk (interleaved)')
+    parser.add_argument('--validation_split_ratio', type=float, default=0.2, help='Validation split ratio (simple)')
+
+    
+    # Argumentos de Ploteo
+    parser.add_argument('--plot_fit', action='store_true', help='Generate extra plots for the train/val fit.')
     
     # Argumentos de Arquitectura (Común)
     parser.add_argument('--dropout', type=float, default=0.3, help='Dropout rate')
@@ -692,42 +1005,34 @@ def main():
     df = load_data(FILE_NAME)
     df_processed, features, targets = preprocess_data(df, TARGET_POLLUTANTS)
     
-    # Step 3: Split and Scale
-    (train_p1, val_p1, train_p2, val_p2, anomaly_df, 
-     f_scaler, t_scaler) = split_and_scale_data(
-        df_processed, features, targets, ANOMALY_START_DATE, ANOMALY_END_DATE
-    )
-
-    # Step 4: Create Sequences (usa args.seq_len)
-    print("Creating training and validation sequences...")
-    X_train1, y_train1 = create_sequences(train_p1, features, targets, args.seq_len)
-    X_train2, y_train2 = create_sequences(train_p2, features, targets, args.seq_len)
-    X_val1, y_val1 = create_sequences(val_p1, features, targets, args.seq_len)
-    X_val2, y_val2 = create_sequences(val_p2, features, targets, args.seq_len)
+    # --- Step 3, 4, 5 (LÓGICA CONDICIONAL) ---
+    pre_gap_df_scaled_for_plot = None
+    post_gap_df_scaled_for_plot = None
     
-    if X_train1.size == 0 and X_train2.size == 0:
-        print("FATAL ERROR: No training sequences created.")
-        sys.exit(1)
-    if X_val1.size == 0 and X_val2.size == 0:
-        print("FATAL ERROR: No validation sequences created.")
-        sys.exit(1)
-
-    X_train = np.concatenate([X_train1, X_train2])
-    y_train = np.concatenate([y_train1, y_train2])
-    X_val = np.concatenate([X_val1, X_val2])
-    y_val = np.concatenate([y_val1, y_val2])
-    
-    print(f"Total training sequences: {len(X_train)}")
-    print(f"Total validation sequences: {len(X_val)}")
-    
-    # Step 5: Create PyTorch DataLoaders (usa args.batch_size)
-    train_dataset = TensorDataset(torch.tensor(X_train, dtype=torch.float32), 
-                                torch.tensor(y_train, dtype=torch.float32))
-    val_dataset = TensorDataset(torch.tensor(X_val, dtype=torch.float32), 
-                              torch.tensor(y_val, dtype=torch.float32))
-    
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    if args.validation_strategy == 'interleaved':
+        (train_loader, val_loader, 
+         f_scaler, t_scaler, 
+         anomaly_df_scaled, 
+         pre_gap_df_scaled_for_plot, 
+         post_gap_df_scaled_for_plot,
+         all_val_chunks) = split_scale_and_sequence_interleaved(
+            df_processed, features, targets, 
+            ANOMALY_START_DATE, ANOMALY_END_DATE,
+            args.train_split_days, args.val_split_days,
+            args.seq_len, args.batch_size
+        )
+    else: # 'simple'
+        (train_loader, val_loader, 
+         f_scaler, t_scaler, 
+         anomaly_df_scaled, 
+         pre_gap_df_scaled_for_plot, # (Contiene todo el train/val_df escalado)
+         post_gap_df_scaled_for_plot, # (Contiene el post_gap_df escalado)
+         all_val_chunks) = split_scale_and_sequence_simple(
+            df_processed, features, targets, 
+            ANOMALY_START_DATE, ANOMALY_END_DATE,
+            args.validation_split_ratio,
+            args.seq_len, args.batch_size
+        )
 
     # --- Step 6: Initialize Model (usa args) ---
     num_features = len(features)
@@ -785,7 +1090,7 @@ def main():
     mae_criterion = nn.L1Loss()
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     
-    # Step 7: Train Model (usa args.epochs, args.patience)
+    # Step 7: Train Model
     (trained_model, 
      train_mse_hist, val_mse_hist, 
      train_mae_hist, val_mae_hist,
@@ -794,9 +1099,9 @@ def main():
         MODEL_SAVE_PATH, args.epochs, args.patience
     )
 
-    # Step 8: Get Anomaly Predictions (usa args.seq_len)
+    # Step 8: Get Anomaly Predictions
     results_df, pollutants_found = get_anomaly_predictions(
-        trained_model, anomaly_df, features, targets, args.seq_len, t_scaler
+        trained_model, anomaly_df_scaled, features, targets, args.seq_len, t_scaler
     )
 
     # Step 9: Plot Results
@@ -810,6 +1115,25 @@ def main():
     plot_metric_curves(train_rmse_hist, val_rmse_hist, "Raíz del Error Cuadrático Medio (RMSE)", plot_base_rmse)
     
     plot_results(results_df, pollutants_found, ANOMALY_PERIOD_1_END, MODEL_TYPE)
+
+    # --- Step 10: NUEVO PLOT DE AJUSTE (si se solicita) ---
+    if args.plot_fit:
+        fit_results_df, fit_pollutants = get_full_fit_predictions(
+            trained_model, 
+            pre_gap_df_scaled_for_plot, 
+            post_gap_df_scaled_for_plot, 
+            features, 
+            targets, 
+            args.seq_len, 
+            t_scaler
+        )
+        plot_train_val_fit(
+            fit_results_df, 
+            all_val_chunks, 
+            fit_pollutants, 
+            MODEL_TYPE
+        )
+    # --- FIN DE NUEVO ---
 
     print("\n--- Analysis Complete ---")
 
