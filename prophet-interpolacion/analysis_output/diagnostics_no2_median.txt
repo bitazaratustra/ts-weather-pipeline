@@ -1,0 +1,5 @@
+REPORTE DE DIAGNÓSTICO PARA NO2 (Mediana)
+====================================
+R-Cuadrado (Varianza Explicada): 0.4573
+RMSE (Error Medio):              7.6374
+Sesgo Medio (Residual Mean):     -0.0001

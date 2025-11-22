@@ -1,0 +1,5 @@
+REPORTE DE DIAGNÓSTICO PARA CO (Mediana)
+====================================
+R-Cuadrado (Varianza Explicada): 0.0343
+RMSE (Error Medio):              0.9750
+Sesgo Medio (Residual Mean):     0.0000

@@ -1,0 +1,5 @@
+REPORTE DE DIAGNÓSTICO PARA PM10 (Mediana)
+====================================
+R-Cuadrado (Varianza Explicada): 0.1925
+RMSE (Error Medio):              12.2362
+Sesgo Medio (Residual Mean):     -0.0001
